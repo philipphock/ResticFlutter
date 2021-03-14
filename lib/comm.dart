@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:hello_world/ItemListView.dart';
+import 'package:hello_world/views/ItemListView.dart';
 
 class $ {
   $._();

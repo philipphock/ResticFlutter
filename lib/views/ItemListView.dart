@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world/comm.dart';
+import 'package:hello_world/main.dart';
 
 class ItemListView extends StatefulWidget {
   ItemListView({Key key, this.title}) : super(key: key);
@@ -103,8 +104,9 @@ class MyListItemState extends State<MyListItem> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                              icon: const Icon(Icons.delete),
+                              icon: const Icon(Icons.edit),
                               onPressed: () {
+                                MyApp.switchViewItemPrefs(context);
                                 $.itemRemoved.add(this.widget);
                               }),
                           IconButton(
