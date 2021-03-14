@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world/comm.dart';
 import 'package:hello_world/main.dart';
+import 'package:hello_world/views/ItemPrefs.dart';
 import 'package:provider/provider.dart';
 
 class ItemListView extends StatelessWidget {
@@ -103,7 +104,9 @@ class MyListItem {
                           IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: () {
-                                Navigator.pushNamed(context, "/prefs");
+                                Navigator.pushNamed(
+                                    context, ItemPrefsView.ROUTE,
+                                    arguments: model);
                               }),
                           IconButton(
                               icon: const Icon(Icons.delete),

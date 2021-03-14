@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             routes: {
               '/': (context) => ItemListView(),
-              '/prefs': (context) => ItemPrefsView()
+              ItemPrefsView.ROUTE: (context) => ItemPrefsView()
             }));
   }
 }
