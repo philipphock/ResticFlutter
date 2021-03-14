@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_world/comm.dart';
 import 'package:hello_world/views/ItemEditView.dart';
 import 'package:hello_world/views/ItemPrefsView.dart';
+import 'package:hello_world/views/dialog.dart';
 import 'package:provider/provider.dart';
 
 class ItemListView extends StatelessWidget {
@@ -67,8 +68,15 @@ class ItemListModel extends ChangeNotifier {
   final List<ListItemModel> entries = [];
   ItemListModel() {
     $.itemRemove.stream.listen((i) {
-      entries.remove(i.payload);
-      notifyListeners();
+      int choice = await MyDialog.showAlertDialog(
+          i.context, "Delete?", "Delete this element?", [
+        DialogOption<int>("no", 0),
+        DialogOption<int>("yes, from list", 1),
+        DialogOption<int>("yes, delete from file system", 2)
+      ]);
+
+      //entries.remove(i.payload);
+      //notifyListeners();
     });
   }
 
