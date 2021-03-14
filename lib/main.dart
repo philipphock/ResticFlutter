@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/comm.dart';
+import 'package:hello_world/views/ItemEditView.dart';
 import 'package:hello_world/views/ItemListView.dart';
-import 'package:hello_world/views/ItemPrefs.dart';
+import 'package:hello_world/views/ItemPrefsView.dart';
+import 'package:hello_world/views/ItemTreeView.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
-}
-
-enum MainViews { ItemList, ItemPrefs }
-
-class SwitchMainViewArgs {
-  final MainViews view;
-  final BuildContext context;
-  SwitchMainViewArgs({this.view, this.context});
 }
 
 class MyApp extends StatelessWidget {
@@ -31,8 +26,10 @@ class MyApp extends StatelessWidget {
             ),
             initialRoute: '/',
             routes: {
-              '/': (context) => ItemListView(),
-              ItemPrefsView.ROUTE: (context) => ItemPrefsView()
+              ItemListView.ROUTE: (context) => ItemListView(),
+              ItemPrefsView.ROUTE: (context) => ItemPrefsView(),
+              ItemEditView.ROUTE: (context) => ItemEditView(),
+              ItemTreeView.ROUTE: (context) => ItemTreeView(),
             }));
   }
 }

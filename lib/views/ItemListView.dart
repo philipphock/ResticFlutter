@@ -1,11 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world/comm.dart';
-import 'package:hello_world/main.dart';
-import 'package:hello_world/views/ItemPrefs.dart';
+import 'package:hello_world/views/ItemEditView.dart';
+import 'package:hello_world/views/ItemPrefsView.dart';
 import 'package:provider/provider.dart';
 
 class ItemListView extends StatelessWidget {
+  static const String ROUTE = "/";
+
+  ItemListView() {
+    $.itemEdit.stream.listen((e) {
+      Navigator.pushNamed(e.context, ItemEditView.ROUTE, arguments: e.payload);
+    });
+    $.itemEnqueuButton.stream.listen((e) {
+      //Navigator.pushNamed(e.context, ItemPrefsView.ROUTE, arguments: e.payload);
+    });
+
+    $.itemInspect.stream.listen((e) {
+      Navigator.pushNamed(e.context, ItemPrefsView.ROUTE, arguments: e.payload);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var listModel = context.watch<ItemListModel>();
@@ -17,7 +32,7 @@ class ItemListView extends StatelessWidget {
               itemCount: listModel.entries.length,
               itemBuilder: (BuildContext context, int index) {
                 final item = listModel.entries[index];
-                return MyListItem.elements(context, item);
+                return MyListItem(item);
               },
             )
           : Center(child: const Text('Use + to add an Item')),
@@ -39,7 +54,7 @@ class ListItemModel extends ChangeNotifier {
   Color _col = Colors.transparent;
   String heading;
 
-  ListItemModel(this.heading);
+  ListItemModel(this.heading) {}
 
   Color get listItemColor => _col;
   set listItemColor(Color value) {
@@ -51,8 +66,8 @@ class ListItemModel extends ChangeNotifier {
 class ItemListModel extends ChangeNotifier {
   final List<ListItemModel> entries = [];
   ItemListModel() {
-    $.itemRemoved.stream.listen((ListItemModel i) {
-      entries.remove(i);
+    $.itemRemove.stream.listen((i) {
+      entries.remove(i.payload);
       notifyListeners();
     });
   }
@@ -63,8 +78,12 @@ class ItemListModel extends ChangeNotifier {
   }
 }
 
-class MyListItem {
-  static Widget elements(BuildContext context, ListItemModel model) {
+class MyListItem extends StatelessWidget {
+  final ListItemModel model;
+  MyListItem(this.model);
+
+  @override
+  Widget build(BuildContext context) {
     return MouseRegion(
         onExit: (e) {
           model.listItemColor = Colors.transparent;
@@ -102,16 +121,27 @@ class MyListItem {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
+                              icon: const Icon(Icons.playlist_add),
+                              onPressed: () {
+                                $.itemEnqueuButton
+                                    .emit(ContextPayload(context, model));
+                              }),
+                          IconButton(
+                              icon: const Icon(Icons.search),
+                              onPressed: () {
+                                $.itemInspect
+                                    .emit(ContextPayload(context, model));
+                              }),
+                          IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: () {
-                                Navigator.pushNamed(
-                                    context, ItemPrefsView.ROUTE,
-                                    arguments: model);
+                                $.itemEdit.emit(ContextPayload(context, model));
                               }),
                           IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
-                                $.itemRemoved.add(model);
+                                $.itemRemove
+                                    .emit(ContextPayload(context, model));
                               }),
                         ],
                       )

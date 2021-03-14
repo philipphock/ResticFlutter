@@ -2,16 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world/views/ItemListView.dart';
 
-class ItemPrefsView extends StatelessWidget {
-  static const String ROUTE = "/prefs";
+class ItemEditView extends StatelessWidget {
+  static const String ROUTE = "/edit";
   @override
   Widget build(BuildContext context) {
     final ListItemModel item = ModalRoute.of(context).settings.arguments;
-    print(item.heading);
+    //print(item.heading);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Title"),
+        title: const Text("Edit"),
         iconTheme: IconThemeData(
           color: Colors.white70, //change your color here
         ),
@@ -20,6 +20,6 @@ class ItemPrefsView extends StatelessWidget {
   }
 }
 
-class ItemPrefsModel extends ChangeNotifier {
-  ItemPrefsModel() : super() {}
+class ItemEditModel extends ChangeNotifier {
+  ItemEditModel();
 }
