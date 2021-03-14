@@ -16,28 +16,23 @@ class SwitchMainViewArgs {
 }
 
 class MyApp extends StatelessWidget {
-  static final ItemListView _itemListView = ItemListView();
-  static void switchViewItemList(BuildContext context) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => _itemListView));
-  }
-
-  static void switchViewItemPrefs(BuildContext context) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ItemPrefsView()));
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => ItemListModel(),
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => ItemPrefsModel()),
+          ChangeNotifierProvider(create: (context) => ItemListModel())
+        ],
         child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            brightness: Brightness.dark,
-            primarySwatch: Colors.blue,
-          ),
-          home: _itemListView,
-        ));
+            title: 'Flutter Demo',
+            theme: ThemeData(
+              brightness: Brightness.dark,
+              primarySwatch: Colors.blue,
+            ),
+            initialRoute: '/',
+            routes: {
+              '/': (context) => ItemListView(),
+              '/prefs': (context) => ItemPrefsView()
+            }));
   }
 }

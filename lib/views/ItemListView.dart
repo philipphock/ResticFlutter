@@ -103,7 +103,7 @@ class MyListItem {
                           IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: () {
-                                MyApp.switchViewItemPrefs(context);
+                                Navigator.pushNamed(context, "/prefs");
                               }),
                           IconButton(
                               icon: const Icon(Icons.delete),

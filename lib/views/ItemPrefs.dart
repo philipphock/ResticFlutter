@@ -1,16 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ItemPrefsView extends StatefulWidget {
-  ItemPrefsView({Key key}) : super(key: key);
-
-  @override
-  ItemPrefsViewState createState() => ItemPrefsViewState();
-}
-
-class ItemPrefsViewState extends State<ItemPrefsView> {
-  ItemPrefsViewState() : super() {}
-
+class ItemPrefsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,4 +13,8 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
       ),
     );
   }
+}
+
+class ItemPrefsModel extends ChangeNotifier {
+  ItemPrefsModel() : super() {}
 }
