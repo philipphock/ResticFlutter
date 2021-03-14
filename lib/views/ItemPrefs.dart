@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class ItemPrefsView extends StatefulWidget {
   ItemPrefsView({Key key}) : super(key: key);
@@ -12,6 +13,13 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Text("hello");
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Title"),
+        iconTheme: IconThemeData(
+          color: Colors.white70, //change your color here
+        ),
+      ),
+    );
   }
 }
