@@ -2,85 +2,88 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world/comm.dart';
 import 'package:hello_world/main.dart';
-import 'package:provider/provider.dart';
 
-class ItemListView extends StatelessWidget {
+class ItemListViewold extends StatefulWidget {
+  ItemListViewold({Key key, this.title}) : super(key: key);
+  final String title;
+
+  @override
+  ItemListViewStateold createState() => ItemListViewStateold();
+}
+
+class ItemListViewStateold extends State<ItemListViewold> {
+  final List<MyListItemold> entries = [];
+  ItemListViewStateold() : super() {
+    $.itemRemoved.stream.listen((MyListItemold i) {
+      setState(() {
+        entries.remove(i);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var listModel = context.watch<ItemListModel>();
-
-    var ret = Scaffold(
+    return Scaffold(
       appBar: AppBar(title: const Text("Title")),
-      body: listModel.entries.length > 0
+      body: entries.length > 0
           ? ListView.builder(
-              itemCount: listModel.entries.length,
+              itemCount: entries.length,
               itemBuilder: (BuildContext context, int index) {
-                final item = listModel.entries[index];
-                return MyListItem.elements(context, item);
+                final item = entries[index];
+                return item;
               },
             )
           : Center(child: const Text('Use + to add an Item')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          listModel.AddItem();
+          setState(() {
+            entries.add(MyListItem(heading: "Item ${entries.length}"));
+          });
         },
         tooltip: 'Add Item',
         child: Icon(Icons.add),
       ),
     );
-    //ChangeNotifierProvider provider = ChangeNotifierProvider(
-    //    create: (context) => ItemListModel(), child: ret);
-    return ret;
   }
 }
 
-class ListItemModel extends ChangeNotifier {
-  Color _col = Colors.transparent;
-  String heading;
+class MyListItem extends StatefulWidget {
+  final String heading;
 
-  ListItemModel(this.heading);
+  MyListItem({Key key, this.heading}) : super(key: key);
 
-  Color get listItemColor => _col;
-  set listItemColor(Color value) {
-    _col = value;
-    notifyListeners();
-  }
+  @override
+  MyListItemState createState() => MyListItemState();
 }
 
-class ItemListModel extends ChangeNotifier {
-  final List<ListItemModel> entries = [];
-  ItemListModel() {
-    $.itemRemoved.stream.listen((ListItemModel i) {
-      entries.remove(i);
-      notifyListeners();
-    });
-  }
+class MyListItemState extends State<MyListItem> {
+  Color listItemColor = Colors.transparent;
 
-  void AddItem() {
-    this.entries.add(ListItemModel("Item ${entries.length}"));
-    notifyListeners();
-  }
-}
+  MyListItemState() {}
 
-class MyListItem {
-  static Widget elements(BuildContext context, ListItemModel model) {
+  @override
+  Widget build(BuildContext context) {
     return MouseRegion(
         onExit: (e) {
-          model.listItemColor = Colors.transparent;
+          setState(() {
+            listItemColor = Colors.transparent;
+          });
         },
         onHover: (e) {
-          model.listItemColor = Colors.lightBlue;
+          setState(() {
+            listItemColor = Colors.lightBlue;
+          });
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(10, 3, 10, 3),
             child: Container(
-                color: model.listItemColor,
+                color: listItemColor,
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Flexible(
                           child: Container(
-                        child: Text(model.heading),
+                        child: Text(this.widget.heading),
                         width: 200,
                         alignment: Alignment.centerLeft,
                       )),
@@ -104,11 +107,12 @@ class MyListItem {
                               icon: const Icon(Icons.edit),
                               onPressed: () {
                                 MyApp.switchViewItemPrefs(context);
+                                $.itemRemoved.add(this.widget);
                               }),
                           IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
-                                $.itemRemoved.add(model);
+                                $.itemRemoved.add(this.widget);
                               }),
                         ],
                       )

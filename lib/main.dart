@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/comm.dart';
 import 'package:hello_world/views/ItemListView.dart';
 import 'package:hello_world/views/ItemPrefs.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,7 +16,7 @@ class SwitchMainViewArgs {
 }
 
 class MyApp extends StatelessWidget {
-  static final ItemListView _itemListView = ItemListView(title: "My App");
+  static final ItemListView _itemListView = ItemListView();
   static void switchViewItemList(BuildContext context) {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => _itemListView));
@@ -29,13 +29,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.blue,
-      ),
-      home: ItemListView(title: 'Flutter Demo Home Page'),
-    );
+    return ChangeNotifierProvider(
+        create: (context) => ItemListModel(),
+        child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            brightness: Brightness.dark,
+            primarySwatch: Colors.blue,
+          ),
+          home: _itemListView,
+        ));
   }
 }
