@@ -58,8 +58,9 @@ class ItemListView extends StatelessWidget {
 class ListItemModel extends ChangeNotifier {
   Color _col = Colors.transparent;
   String heading;
+  List<TextEditingController> source = [];
 
-  ListItemModel(this.heading) {}
+  ListItemModel({this.heading});
 
   Color get listItemColor => _col;
   set listItemColor(Color value) {
