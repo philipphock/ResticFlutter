@@ -21,12 +21,12 @@ class ItemEditView extends StatefulWidget {
 }
 
 class ItemEditState extends State<ItemEditView> {
-  String _demo = "uninit";
+  String _title = "New repo";
 
-  String get demo => _demo;
-  set demo(String value) {
+  String get title => _title;
+  set title(String value) {
     setState(() {
-      _demo = value;
+      _title = value;
     });
   }
 
@@ -34,16 +34,54 @@ class ItemEditState extends State<ItemEditView> {
   Widget build(BuildContext context) {
     final ItemEditViewArgs args = ModalRoute.of(context).settings.arguments;
     if (args.op == Operation.NEW) {
-      print("NEW");
-      demo = "new";
+      title = "New repo";
     } else {
-      demo = "EdIT";
+      title = "Edit repo";
     }
 
     return Scaffold(
-      body: Text(demo),
+      body: Column(
+        children: [
+          Expanded(child: Container(child: Text("Hello"))),
+          Container(
+            child: Text("bottom"),
+            constraints: BoxConstraints(maxHeight: 50, minHeight: 50),
+          )
+        ],
+      )
+      /*
+      Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(children: [
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Name'),
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Source'),
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Password'),
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Password'),
+            ),
+            Row(
+              children: [
+                Flexible(
+                    child: TextFormField(
+                  decoration: InputDecoration(labelText: 'Snapshots to keep'),
+                )),
+                Flexible(child: Text("Save password")),
+                Flexible(
+                    child: Checkbox(
+                  value: true,
+                ))
+              ],
+            ),
+          ]))*/
+      ,
       appBar: AppBar(
-          title: const Text("Edit"),
+          title: Text(title),
           iconTheme: IconThemeData(
             color: Colors.white70, //change your color here
           ),
