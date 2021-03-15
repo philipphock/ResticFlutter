@@ -38,8 +38,12 @@ class ItemListView extends StatelessWidget {
             )
           : Center(child: const Text('Use + to add an Item')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          listModel.AddItem();
+        onPressed: () async {
+          var i = await Navigator.pushNamed(context, ItemEditView.ROUTE,
+              arguments: ItemEditViewArgs.create()) as ListItemModel;
+          if (i != null) {
+            listModel.AddItem(i);
+          }
         },
         tooltip: 'Add Item',
         child: Icon(Icons.add),
@@ -82,8 +86,8 @@ class ItemListModel extends ChangeNotifier {
     });
   }
 
-  void AddItem() {
-    this.entries.add(ListItemModel("Item ${entries.length}"));
+  void AddItem(ListItemModel m) {
+    this.entries.add(m);
     notifyListeners();
   }
 }
