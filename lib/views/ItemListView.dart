@@ -42,6 +42,7 @@ class ItemListView extends StatelessWidget {
           var i = await Navigator.pushNamed(context, ItemEditView.ROUTE,
               arguments: ItemEditViewArgs.create()) as ListItemModel;
           if (i != null) {
+            print("pushed");
             listModel.AddItem(i);
           }
         },
@@ -57,7 +58,7 @@ class ItemListView extends StatelessWidget {
 
 class ListItemModel extends ChangeNotifier {
   Color _col = Colors.transparent;
-  String heading;
+  String heading = "";
   List<TextEditingController> source = [];
 
   ListItemModel({this.heading});

@@ -26,7 +26,7 @@ class ItemEditView extends StatefulWidget {
 
 class ItemEditState extends State<ItemEditView> {
   String _title = "New repo";
-  final ListItemModel ret = ListItemModel();
+  ListItemModel ret;
 
   String get title => _title;
   set title(String value) {
@@ -44,6 +44,10 @@ class ItemEditState extends State<ItemEditView> {
     final ItemEditViewArgs args = ModalRoute.of(context).settings.arguments;
     if (args.op == Operation.NEW) {
       title = "New repo";
+      if (ret == null) {
+        ret = ListItemModel(heading: "");
+        ret.source.add(TextEditingController(text: "c:/"));
+      }
     } else {
       title = "Edit repo";
     }
@@ -71,12 +75,16 @@ class ItemEditState extends State<ItemEditView> {
                     )),
                     IconButton(
                         icon: Icon(Icons.folder_open),
-                        onPressed: () => setState(() {
-                              FilesystemPicker.open(
+                        onPressed: () => setState(() async {
+                              var p = await FilesystemPicker.open(
                                   context: context,
                                   fsType: FilesystemType.folder,
-                                  rootDirectory: Directory.fromUri(
-                                      Uri.file(ret.source[index].text)));
+                                  rootDirectory: Directory.fromUri(Uri.file(
+                                      ret.source[index].text,
+                                      windows: Platform.isWindows)));
+                              if (p != null) {
+                                ret.source[index].text = p;
+                              }
                             })),
                     IconButton(
                         icon: Icon(Icons.delete),
