@@ -12,19 +12,36 @@ class ItemEditViewArgs {
   ItemEditViewArgs.create() : this(null, Operation.NEW);
 }
 
-class ItemEditView extends StatelessWidget {
+class ItemEditView extends StatefulWidget {
   static const String ROUTE = "/edit";
+  const ItemEditView({Key key}) : super(key: key);
+
+  @override
+  ItemEditState createState() => ItemEditState();
+}
+
+class ItemEditState extends State<ItemEditView> {
+  String _demo = "uninit";
+
+  String get demo => _demo;
+  set demo(String value) {
+    setState(() {
+      _demo = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final ItemEditViewArgs args = ModalRoute.of(context).settings.arguments;
     if (args.op == Operation.NEW) {
       print("NEW");
+      demo = "new";
     } else {
-      print("EDIT");
+      demo = "EdIT";
     }
-    //print(item.heading);
 
     return Scaffold(
+      body: Text(demo),
       appBar: AppBar(
           title: const Text("Edit"),
           iconTheme: IconThemeData(
@@ -36,8 +53,4 @@ class ItemEditView extends StatelessWidget {
                   Navigator.pop(context, new ListItemModel("heading")))),
     );
   }
-}
-
-class ItemEditModel extends ChangeNotifier {
-  ItemEditModel();
 }
