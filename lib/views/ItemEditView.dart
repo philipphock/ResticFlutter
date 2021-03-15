@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hello_world/views/ItemListView.dart';
 import 'package:hello_world/views/dialog.dart';
 
@@ -27,7 +28,7 @@ class ItemEditView extends StatefulWidget {
 class ItemEditState extends State<ItemEditView> {
   String _title = "New repo";
   ListItemModel ret;
-
+  bool _pwVis = true;
   String get title => _title;
   set title(String value) {
     setState(() {
@@ -100,18 +101,44 @@ class ItemEditState extends State<ItemEditView> {
                     });
                   },
                   icon: Icon(Icons.add)),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Password'),
+              Row(
+                children: [
+                  Expanded(
+                      child: TextField(
+                    obscureText: _pwVis,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                    ),
+                  )),
+                  IconButton(
+                      icon: Icon(
+                          _pwVis ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () {
+                        setState(() {
+                          _pwVis = !_pwVis;
+                        });
+                      })
+                ],
               ),
-              TextFormField(
+              TextField(
+                obscureText: _pwVis,
+                enableSuggestions: false,
+                autocorrect: false,
                 decoration: InputDecoration(labelText: 'Password'),
               ),
               Row(
                 children: [
-                  Flexible(
-                      child: TextFormField(
-                    decoration: InputDecoration(labelText: 'Snapshots to keep'),
-                  )),
+                  Text("Snapshots to keep: "),
+                  SizedBox(
+                      width: 50,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      )),
                   Flexible(child: Text("Save password")),
                   Flexible(
                       child: Checkbox(
