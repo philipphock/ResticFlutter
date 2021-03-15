@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(hello_world LANGUAGES CXX)
+project(restic_ui LANGUAGES CXX)
 
-set(BINARY_NAME "hello_world")
+set(BINARY_NAME "restic_ui")
 
 cmake_policy(SET CMP0063 NEW)
 

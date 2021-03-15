@@ -1,4 +1,4 @@
-# hello_world
+# restic_ui
 
 A new Flutter project.
 

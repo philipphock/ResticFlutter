@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_world/views/ItemListView.dart';
+import 'package:restic_ui/models/ItemListModel.dart';
 
 class ItemTreeView extends StatelessWidget {
   static const String ROUTE = "/tree";

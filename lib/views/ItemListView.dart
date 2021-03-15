@@ -1,22 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_world/comm.dart';
-import 'package:hello_world/views/ItemEditView.dart';
-import 'package:hello_world/views/ItemPrefsView.dart';
-import 'package:hello_world/views/dialog.dart';
+import 'package:restic_ui/comm.dart';
+import 'package:restic_ui/models/ItemListModel.dart';
+import 'package:restic_ui/views/ItemEditView.dart';
+import 'package:restic_ui/views/ItemPrefsView.dart';
+import 'package:restic_ui/views/dialog.dart';
 import 'package:provider/provider.dart';
 
 class ItemListView extends StatelessWidget {
   static const String ROUTE = "/";
 
   ItemListView() {
-    $.itemEdit.stream.listen((e) {
-      Navigator.pushNamed(e.context, ItemEditView.ROUTE, arguments: e.payload);
-    });
-    $.itemEnqueuButton.stream.listen((e) {
-      //Navigator.pushNamed(e.context, ItemPrefsView.ROUTE, arguments: e.payload);
-    });
-
     $.itemInspect.stream.listen((e) {
       Navigator.pushNamed(e.context, ItemPrefsView.ROUTE, arguments: e.payload);
     });
@@ -33,7 +27,7 @@ class ItemListView extends StatelessWidget {
               itemCount: listModel.entries.length,
               itemBuilder: (BuildContext context, int index) {
                 final item = listModel.entries[index];
-                return MyListItem(item);
+                return MyListItem(item, listModel);
               },
             )
           : Center(child: const Text('Use + to add an Item')),
@@ -53,20 +47,6 @@ class ItemListView extends StatelessWidget {
     //ChangeNotifierProvider provider = ChangeNotifierProvider(
     //    create: (context) => ItemListModel(), child: ret);
     return ret;
-  }
-}
-
-class ListItemModel extends ChangeNotifier {
-  Color _col = Colors.transparent;
-  String heading = "";
-  List<TextEditingController> source = [];
-
-  ListItemModel({this.heading});
-
-  Color get listItemColor => _col;
-  set listItemColor(Color value) {
-    _col = value;
-    notifyListeners();
   }
 }
 
@@ -96,7 +76,8 @@ class ItemListModel extends ChangeNotifier {
 
 class MyListItem extends StatelessWidget {
   final ListItemModel model;
-  MyListItem(this.model);
+  final ItemListModel parent;
+  MyListItem(this.model, this.parent);
 
   @override
   Widget build(BuildContext context) {
@@ -150,8 +131,15 @@ class MyListItem extends StatelessWidget {
                               }),
                           IconButton(
                               icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                $.itemEdit.emit(ContextPayload(context, model));
+                              onPressed: () async {
+                                var a = await Navigator.pushNamed(
+                                    context, ItemEditView.ROUTE,
+                                    arguments: ItemEditViewArgs.edit(model));
+                                if (a != null) {
+                                  model.from(a);
+                                  print("EDITED");
+                                  parent.notifyListeners();
+                                }
                               }),
                           IconButton(
                               icon: const Icon(Icons.delete),

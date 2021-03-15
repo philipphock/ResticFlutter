@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:hello_world/views/ItemListView.dart';
+import 'package:restic_ui/models/ItemListModel.dart';
 
 class ContextPayload<P> {
   final BuildContext context;
@@ -29,7 +29,7 @@ class $ {
   $._();
   static final BroadcastStream<ContextPayload<ListItemModel>> itemRemove =
       new BroadcastStream();
-  static final BroadcastStream<ContextPayload<ListItemModel>> itemEdit =
+  static final BroadcastStream<ContextPayload<ListItemModel>> itemEdited =
       new BroadcastStream();
   static final BroadcastStream<ContextPayload<ListItemModel>> itemInspect =
       new BroadcastStream();

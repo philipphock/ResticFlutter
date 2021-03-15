@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/comm.dart';
-import 'package:hello_world/views/ItemEditView.dart';
-import 'package:hello_world/views/ItemListView.dart';
-import 'package:hello_world/views/ItemPrefsView.dart';
-import 'package:hello_world/views/ItemTreeView.dart';
+import 'package:restic_ui/comm.dart';
+import 'package:restic_ui/views/ItemEditView.dart';
+import 'package:restic_ui/views/ItemListView.dart';
+import 'package:restic_ui/views/ItemPrefsView.dart';
+import 'package:restic_ui/views/ItemTreeView.dart';
 import 'package:provider/provider.dart';
 
 void main() {

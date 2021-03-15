@@ -4,8 +4,8 @@ import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hello_world/views/ItemListView.dart';
-import 'package:hello_world/views/dialog.dart';
+import 'package:restic_ui/models/ItemListModel.dart';
+import 'package:restic_ui/views/dialog.dart';
 
 enum Operation { EDIT, NEW }
 
@@ -27,12 +27,28 @@ class ItemEditView extends StatefulWidget {
 
 class ItemEditState extends State<ItemEditView> {
   String _title = "New repo";
+  bool pwMatch = true;
   ListItemModel ret;
+  bool edit = false;
   bool _pwVis = true;
+  String _pw2;
+  String _pw1;
+
   String get title => _title;
   set title(String value) {
     setState(() {
       _title = value;
+    });
+  }
+
+  void validatePWs() {
+    print("${_pw1} ## $_pw2");
+
+    setState(() {
+      pwMatch = _pw1 == _pw2;
+      if (pwMatch) {
+        ret.password = _pw1;
+      }
     });
   }
 
@@ -45,12 +61,21 @@ class ItemEditState extends State<ItemEditView> {
     final ItemEditViewArgs args = ModalRoute.of(context).settings.arguments;
     if (args.op == Operation.NEW) {
       title = "New repo";
+      edit = false;
       if (ret == null) {
         ret = ListItemModel(heading: "");
-        ret.source.add(TextEditingController(text: "c:/"));
+        if (Platform.isWindows) {
+          ret.source.add("c:/");
+        } else {
+          ret.source.add("/");
+        }
       }
     } else {
+      edit = true;
       title = "Edit repo";
+      ret = ListItemModel.clone(args.model);
+      _pw1 = ret.password;
+      _pw2 = ret.password;
     }
 
     return Scaffold(
@@ -59,6 +84,9 @@ class ItemEditState extends State<ItemEditView> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               TextFormField(
+                onChanged: (s) {
+                  ret.heading = s;
+                },
                 decoration: InputDecoration(labelText: 'Name'),
               ),
               SizedBox(height: 14),
@@ -71,7 +99,9 @@ class ItemEditState extends State<ItemEditView> {
                   return Row(children: [
                     Expanded(
                         child: TextFormField(
-                      controller: ret.source[index],
+                      onChanged: (s) {
+                        ret.source[index] = s;
+                      },
                       decoration: InputDecoration(labelText: 'Source path'),
                     )),
                     IconButton(
@@ -81,10 +111,10 @@ class ItemEditState extends State<ItemEditView> {
                                   context: context,
                                   fsType: FilesystemType.folder,
                                   rootDirectory: Directory.fromUri(Uri.file(
-                                      ret.source[index].text,
+                                      ret.source[index],
                                       windows: Platform.isWindows)));
                               if (p != null) {
-                                ret.source[index].text = p;
+                                ret.source[index] = p;
                               }
                             })),
                     IconButton(
@@ -97,7 +127,7 @@ class ItemEditState extends State<ItemEditView> {
               IconButton(
                   onPressed: () {
                     setState(() {
-                      ret.source.add(TextEditingController(text: ""));
+                      ret.source.add("");
                     });
                   },
                   icon: Icon(Icons.add)),
@@ -108,6 +138,10 @@ class ItemEditState extends State<ItemEditView> {
                     obscureText: _pwVis,
                     enableSuggestions: false,
                     autocorrect: false,
+                    onChanged: (s) {
+                      _pw1 = s;
+                      validatePWs();
+                    },
                     decoration: InputDecoration(
                       labelText: 'Password',
                     ),
@@ -126,8 +160,18 @@ class ItemEditState extends State<ItemEditView> {
                 obscureText: _pwVis,
                 enableSuggestions: false,
                 autocorrect: false,
+                onChanged: (s) {
+                  _pw2 = s;
+                  validatePWs();
+                },
                 decoration: InputDecoration(labelText: 'Password'),
               ),
+              Visibility(
+                  visible: !pwMatch,
+                  child: Text(
+                    "passwords don't match",
+                    style: TextStyle(color: Colors.red, fontSize: 11),
+                  )),
               Row(
                 children: [
                   Text("Snapshots to keep: "),
@@ -142,8 +186,12 @@ class ItemEditState extends State<ItemEditView> {
                   Flexible(child: Text("Save password")),
                   Flexible(
                       child: Checkbox(
-                    value: true,
-                    onChanged: (bool value) {},
+                    value: ret.savePw,
+                    onChanged: (v) {
+                      setState(() {
+                        ret.savePw = v;
+                      });
+                    },
                   ))
                 ],
               ),
