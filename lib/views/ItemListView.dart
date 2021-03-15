@@ -67,7 +67,7 @@ class ListItemModel extends ChangeNotifier {
 class ItemListModel extends ChangeNotifier {
   final List<ListItemModel> entries = [];
   ItemListModel() {
-    $.itemRemove.stream.listen((i) {
+    $.itemRemove.stream.listen((i) async {
       int choice = await MyDialog.showAlertDialog(
           i.context, "Delete?", "Delete this element?", [
         DialogOption<int>("no", 0),
@@ -75,8 +75,10 @@ class ItemListModel extends ChangeNotifier {
         DialogOption<int>("yes, delete from file system", 2)
       ]);
 
-      //entries.remove(i.payload);
-      //notifyListeners();
+      if (choice == 1) {
+        entries.remove(i.payload);
+        notifyListeners();
+      }
     });
   }
 
