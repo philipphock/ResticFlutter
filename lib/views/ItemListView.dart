@@ -107,11 +107,19 @@ class MyListItem extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    "asd",
-                                  ),
-                                  Text("asdsa", textAlign: TextAlign.left),
-                                  Text("asas", textAlign: TextAlign.left)
+                                  Row(children: [
+                                    Text("Last Backup: "),
+                                    Text("TODO", textAlign: TextAlign.left)
+                                  ]),
+                                  Row(children: [
+                                    Text("Repo: "),
+                                    Text(model.repo, textAlign: TextAlign.left)
+                                  ]),
+                                  Row(children: [
+                                    Text("Source: "),
+                                    Text(model.source.join("\n"),
+                                        textAlign: TextAlign.left)
+                                  ]),
                                 ],
                               ))),
                       Row(

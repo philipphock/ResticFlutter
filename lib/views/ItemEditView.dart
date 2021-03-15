@@ -84,10 +84,18 @@ class ItemEditState extends State<ItemEditView> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               TextFormField(
+                initialValue: ret.heading,
                 onChanged: (s) {
                   ret.heading = s;
                 },
                 decoration: InputDecoration(labelText: 'Name'),
+              ),
+              TextFormField(
+                initialValue: ret.repo,
+                onChanged: (s) {
+                  ret.repo = s;
+                },
+                decoration: InputDecoration(labelText: 'Repo'),
               ),
               SizedBox(height: 14),
               Text("Sources", style: TextStyle(fontSize: 19)),
@@ -126,6 +134,7 @@ class ItemEditState extends State<ItemEditView> {
               ),
               IconButton(
                   onPressed: () {
+                    print("ADDED");
                     setState(() {
                       ret.source.add("");
                     });
