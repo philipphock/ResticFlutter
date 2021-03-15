@@ -82,6 +82,7 @@ class ItemEditState extends State<ItemEditView> {
       ,
       appBar: AppBar(
           title: Text(title),
+          actions: [IconButton(icon: Icon(Icons.save))],
           iconTheme: IconThemeData(
             color: Colors.white70, //change your color here
           ),
