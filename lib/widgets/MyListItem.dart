@@ -28,7 +28,7 @@ class MyListItem extends StatelessWidget {
             children: [
               Flexible(
                   child: Container(
-                child: Text(model.heading),
+                child: Text(model?.heading ?? ""),
                 width: 200,
                 alignment: Alignment.centerLeft,
               )),

@@ -62,7 +62,7 @@ class ItemEditState extends State<ItemEditView> with Log {
       title = "New repo";
       edit = false;
       if (ret == null) {
-        ret = ListItemModel(heading: "");
+        ret = ListItemModel();
         if (Platform.isWindows) {
           ret.source.add("c:/");
         } else {

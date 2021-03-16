@@ -1,5 +1,5 @@
 mixin Log {
-  void log(Object o) {
+  void print(Object o) {
     print("$this: $o");
   }
 }

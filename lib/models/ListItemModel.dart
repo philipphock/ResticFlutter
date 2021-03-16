@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ListItemModel extends ChangeNotifier {
+  int dbId = -1;
   Color _col = Colors.transparent;
   Color get listItemColor => _col;
   set listItemColor(Color value) {
@@ -11,16 +12,18 @@ class ListItemModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  ListItemModel();
+
   List<String> source = [];
 
   String _heading = "";
-  int lastBackup = 0;
+  int _lastBackup = 0;
   set heading(String value) {
     _heading = value;
     notifyListeners();
   }
 
-  String get heading => _heading;
+  String get heading => _heading ?? "";
 
   String _repo = "";
   set repo(String value) {
@@ -28,7 +31,7 @@ class ListItemModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get repo => _repo == null ? "" : _repo;
+  String get repo => _repo ?? "";
 
   String _password = "";
   set password(String value) {
@@ -36,7 +39,7 @@ class ListItemModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get password => _password == null ? "" : _password;
+  String get password => _password ?? "";
 
   int _keepSnaps = 3;
 
@@ -56,11 +59,6 @@ class ListItemModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  ListItemModel({String heading, String repo}) {
-    this.heading = heading;
-    this.repo = repo;
-  }
-
   void from(ListItemModel m) {
     this.heading = m.heading;
     this.repo = m.repo;
@@ -76,18 +74,19 @@ class ListItemModel extends ChangeNotifier {
 
   ListItemModel.fromJson(Map<String, dynamic> json)
       : this._heading = json['name'],
+        this.dbId = json['_key'],
         this._keepSnaps = json['keepSnaps'],
         this._password = json['password'],
         this._repo = json['repo'],
-        this.source = jsonDecode(json['source']),
-        this.lastBackup = json['lastBackup'];
+        //this.source = jsonDecode(json['source']),
+        this._lastBackup = json['lastBackup'];
 
   Map<String, dynamic> toJson() => {
-        'name': this._heading,
-        'keepSnaps': this._keepSnaps,
-        'password': this._password,
-        'repo': this._repo,
+        'name': this.heading,
+        'keepSnaps': this.keepSnaps,
+        'password': this.password,
+        'repo': this.repo,
         'source': jsonEncode(this.source),
-        'lastBackup': this.lastBackup
+        'lastBackup': this._lastBackup
       };
 }
