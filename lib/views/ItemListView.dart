@@ -18,11 +18,20 @@ class ItemListView extends StatelessWidget {
     var ret = Scaffold(
       appBar: AppBar(title: const Text("Title")),
       body: listModel.entries.length > 0
-          ? ListView.builder(
-              itemCount: listModel.entries.length,
+          ? ListView.separated(
+              separatorBuilder: (context, id) => Divider(
+                height: 2,
+                color: Colors.black,
+              ),
+              itemCount: listModel.entries.length + 2,
               itemBuilder: (BuildContext context, int index) {
-                final item = listModel.entries[index];
-                return MyListItem(item, listModel);
+                if (index == 0 || index == listModel.entries.length + 1) {
+                  return Container(); // spacer at top and bottom
+                }
+                final item = listModel.entries[index - 1];
+                return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: MyListItem(item, listModel));
               },
             )
           : Center(child: const Text('Use + to add an Item')),
