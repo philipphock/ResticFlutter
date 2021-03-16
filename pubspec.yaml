@@ -26,6 +26,8 @@ dependencies:
   provider: ^4.3.3
   tuple: ^2.0.0
   filesystem_picker: ^1.0.4
+  sembast: ^3.0.0+4
+
 
 
 
