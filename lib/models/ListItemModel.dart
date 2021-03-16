@@ -25,7 +25,7 @@ class ListItemModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get repo => _repo;
+  String get repo => _repo == null ? "" : _repo;
 
   String _password = "";
   set password(String value) {
@@ -33,7 +33,7 @@ class ListItemModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get password => _password;
+  String get password => _password == null ? "" : _password;
 
   int _keepSnaps = 3;
 

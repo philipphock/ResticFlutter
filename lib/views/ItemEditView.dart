@@ -4,7 +4,8 @@ import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:restic_ui/models/ItemListModel.dart';
+import 'package:restic_ui/models/ListItemModel.dart';
+import 'package:restic_ui/util/Log.dart';
 import 'package:restic_ui/views/dialog.dart';
 
 enum Operation { EDIT, NEW }
@@ -25,7 +26,7 @@ class ItemEditView extends StatefulWidget {
   ItemEditState createState() => ItemEditState();
 }
 
-class ItemEditState extends State<ItemEditView> {
+class ItemEditState extends State<ItemEditView> with Log {
   String _title = "New repo";
   bool pwMatch = true;
   ListItemModel ret;
@@ -42,8 +43,6 @@ class ItemEditState extends State<ItemEditView> {
   }
 
   void validatePWs() {
-    print("${_pw1} ## $_pw2");
-
     setState(() {
       pwMatch = _pw1 == _pw2;
       if (pwMatch) {
@@ -71,11 +70,13 @@ class ItemEditState extends State<ItemEditView> {
         }
       }
     } else {
-      edit = true;
-      title = "Edit repo";
-      ret = ListItemModel.clone(args.model);
-      _pw1 = ret.password;
-      _pw2 = ret.password;
+      if (ret == null) {
+        edit = true;
+        title = "Edit repo";
+        ret = ListItemModel.clone(args.model);
+        _pw1 = ret.password;
+        _pw2 = ret.password;
+      }
     }
 
     return Scaffold(
@@ -107,6 +108,7 @@ class ItemEditState extends State<ItemEditView> {
                   return Row(children: [
                     Expanded(
                         child: TextFormField(
+                      initialValue: ret.source[index],
                       onChanged: (s) {
                         ret.source[index] = s;
                       },
@@ -134,19 +136,20 @@ class ItemEditState extends State<ItemEditView> {
               ),
               IconButton(
                   onPressed: () {
-                    print("ADDED");
                     setState(() {
                       ret.source.add("");
+                      print("ADDED ${ret.source.length}");
                     });
                   },
                   icon: Icon(Icons.add)),
               Row(
                 children: [
                   Expanded(
-                      child: TextField(
+                      child: TextFormField(
                     obscureText: _pwVis,
                     enableSuggestions: false,
                     autocorrect: false,
+                    initialValue: ret.password,
                     onChanged: (s) {
                       _pw1 = s;
                       validatePWs();
@@ -165,10 +168,11 @@ class ItemEditState extends State<ItemEditView> {
                       })
                 ],
               ),
-              TextField(
+              TextFormField(
                 obscureText: _pwVis,
                 enableSuggestions: false,
                 autocorrect: false,
+                initialValue: ret.password,
                 onChanged: (s) {
                   _pw2 = s;
                   validatePWs();
@@ -186,7 +190,9 @@ class ItemEditState extends State<ItemEditView> {
                   Text("Snapshots to keep: "),
                   SizedBox(
                       width: 50,
-                      child: TextField(
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        initialValue: "${ret.keepSnaps}",
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly
