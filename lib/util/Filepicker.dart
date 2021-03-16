@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:restic_ui/views/dialog.dart';
+import 'package:restic_ui/util/dialog.dart';
 
 Future<String> pickFolder(BuildContext context) async {
   final isWin = Platform.isWindows;
   var drive = "/";
   if (isWin) {
-    drive = await MyDialog.showInputDialog(context, "Drive", "drive letter",
-        len: 1);
+    drive = await showInputDialog(context, "Drive", "drive letter", len: 1);
     if (drive == null) {
       return null;
     }
