@@ -72,14 +72,29 @@ class ListItemModel extends ChangeNotifier {
     this.from(toClone);
   }
 
-  ListItemModel.fromJson(Map<String, dynamic> json)
-      : this._heading = json['name'],
-        this.dbId = json['_key'],
-        this._keepSnaps = json['keepSnaps'],
-        this._password = json['password'],
-        this._repo = json['repo'],
-        //this.source = jsonDecode(json['source']),
-        this._lastBackup = json['lastBackup'];
+  ListItemModel.fromJson(Map<String, dynamic> json) {
+    this._heading = json['name'];
+    this.dbId = json['_key'];
+    this._keepSnaps = json['keepSnaps'];
+    this._password = json['password'];
+    this._repo = json['repo'];
+    this._lastBackup = json['lastBackup'];
+
+    jsonDecode(
+      json['source'],
+      reviver: (key, value) {
+        print("key $key");
+        print("value $value");
+        if (key != null) {
+          this.source.add(value.toString());
+        }
+        return null;
+      },
+    );
+
+    //this.source = decoded;
+    //.map((key, value) => {key, value.toString()});
+  }
 
   Map<String, dynamic> toJson() => {
         'name': this.heading,
