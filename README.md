@@ -1,6 +1,6 @@
 # restic_ui
 
-A new Flutter project.
+Restic UI.
 
 ## Getting Started
 
