@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
+import 'package:restic_ui/db/Database.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
 import 'package:restic_ui/views/ItemListView.dart';
 import 'package:restic_ui/views/ItemPrefsView.dart';
@@ -8,7 +9,6 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
-  //print("test");
 }
 
 class MyApp extends StatelessWidget {

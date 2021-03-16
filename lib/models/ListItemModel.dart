@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,7 @@ class ListItemModel extends ChangeNotifier {
   List<String> source = [];
 
   String _heading = "";
+  int lastBackup = 0;
   set heading(String value) {
     _heading = value;
     notifyListeners();
@@ -70,4 +73,21 @@ class ListItemModel extends ChangeNotifier {
   ListItemModel.clone(ListItemModel toClone) {
     this.from(toClone);
   }
+
+  ListItemModel.fromJson(Map<String, dynamic> json)
+      : this._heading = json['name'],
+        this._keepSnaps = json['keepSnaps'],
+        this._password = json['password'],
+        this._repo = json['repo'],
+        this.source = jsonDecode(json['source']),
+        this.lastBackup = json['lastBackup'];
+
+  Map<String, dynamic> toJson() => {
+        'name': this._heading,
+        'keepSnaps': this._keepSnaps,
+        'password': this._password,
+        'repo': this._repo,
+        'source': jsonEncode(this.source),
+        'lastBackup': this.lastBackup
+      };
 }
