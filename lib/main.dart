@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
+  //print("test");
 }
 
 class MyApp extends StatelessWidget {
@@ -15,12 +16,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => ItemPrefsModel()),
           ChangeNotifierProvider(create: (context) => ItemListModel()),
           //ChangeNotifierProvider(create: (context) => ItemEditModel())
         ],
         child: MaterialApp(
-            title: 'Flutter Demo',
+            title: 'Restic UI',
             theme: ThemeData(
               brightness: Brightness.dark,
               primarySwatch: Colors.blue,

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
+import 'package:restic_ui/util/Filepicker.dart';
 import 'package:restic_ui/util/Log.dart';
 import 'package:restic_ui/views/dialog.dart';
 
@@ -117,12 +118,7 @@ class ItemEditState extends State<ItemEditView> with Log {
                     IconButton(
                         icon: Icon(Icons.folder_open),
                         onPressed: () => setState(() async {
-                              var p = await FilesystemPicker.open(
-                                  context: context,
-                                  fsType: FilesystemType.folder,
-                                  rootDirectory: Directory.fromUri(Uri.file(
-                                      ret.source[index],
-                                      windows: Platform.isWindows)));
+                              var p = await pickFolder(context);
                               if (p != null) {
                                 ret.source[index] = p;
                               }

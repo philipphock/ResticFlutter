@@ -42,4 +42,53 @@ class MyDialog {
 
     return ret.future;
   }
+
+  static Future showInputDialog<R>(
+      BuildContext context, String title, final String msg,
+      {int len = 1000}) {
+    // set up the buttons
+    Completer<String> ret = Completer();
+    String inputText = "";
+    var ok = TextButton(
+        child: Text("OK"),
+        onPressed: () {
+          Navigator.of(context).pop();
+          ret.complete(inputText);
+        });
+    var cancel = TextButton(
+        child: Text("cancel"),
+        onPressed: () {
+          Navigator.of(context).pop();
+          ret.complete(null);
+        });
+
+    var input = TextField(
+        autofocus: true,
+        maxLength: len,
+        autocorrect: false,
+        onSubmitted: (value) {
+          Navigator.of(context).pop();
+          ret.complete(inputText);
+        },
+        decoration: InputDecoration(hintText: msg),
+        onChanged: (value) {
+          inputText = value;
+        });
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(title),
+      content: input,
+      actions: [ok, cancel],
+    );
+
+    // show the dialog
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        });
+
+    return ret.future;
+  }
 }

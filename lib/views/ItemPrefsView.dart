@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
+import 'package:restic_ui/util/Filepicker.dart';
 
 class ItemPrefsView extends StatelessWidget {
   static const String ROUTE = "/prefs";
@@ -60,7 +61,10 @@ class ItemPrefsView extends StatelessWidget {
                                   Text("Item"),
                                   Spacer(),
                                   IconButton(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        var f = await pickFolder(context);
+                                        if (f != null) {}
+                                      },
                                       icon: Icon(Icons.file_download)),
                                   IconButton(
                                       onPressed: () {},
