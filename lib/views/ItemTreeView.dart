@@ -19,7 +19,3 @@ class ItemTreeView extends StatelessWidget {
     );
   }
 }
-
-class ItemTreeModel extends ChangeNotifier {
-  ItemTreeModel();
-}
