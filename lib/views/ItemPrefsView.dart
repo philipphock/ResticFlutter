@@ -12,76 +12,88 @@ class ItemPrefsView extends StatelessWidget {
     print(item.heading);
 
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: const Text("Inspect"),
-          iconTheme: IconThemeData(
-            color: Colors.white70, //change your color here
-          ),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: const Text("Inspect"),
+        iconTheme: IconThemeData(
+          color: Colors.white70, //change your color here
         ),
-        body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           Padding(
-              padding: EdgeInsets.all(5),
-              child: Text(
-                "Heading",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 38),
-              )),
+            padding: EdgeInsets.all(5),
+            child: Text(
+              "Heading",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 38),
+            ),
+          ),
           Padding(
-              padding: EdgeInsets.all(1),
-              child: Text(
-                "Repo",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28),
-              )),
+            padding: EdgeInsets.all(1),
+            child: Text(
+              "Repo",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 28),
+            ),
+          ),
           Padding(
-              padding: EdgeInsets.all(1),
-              child: Text(
-                "Src",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28),
-              )),
+            padding: EdgeInsets.all(1),
+            child: Text(
+              "Src",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 28),
+            ),
+          ),
 
           // List
           Expanded(
-              child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: ListView.separated(
-                      separatorBuilder: (context, index) =>
-                          Divider(color: Colors.black, height: 5),
-                      //shrinkWrap: true,
-                      //physics: ClampingScrollPhysics(),
-                      itemCount: 14,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                            color: Colors.black38,
-                            child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 30, horizontal: 5),
-                                child: Row(children: [
-                                  Text("Item"),
-                                  Spacer(),
-                                  IconButton(
-                                      onPressed: () async {
-                                        var f = await pickFolder(context);
-                                        if (f != null) {}
-                                      },
-                                      icon: Icon(Icons.file_download)),
-                                  IconButton(
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                            context, ItemTreeView.ROUTE,
-                                            arguments: item);
-                                      },
-                                      icon: Icon(Icons.folder_open_rounded)),
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                      ))
-                                ])));
-                      })))
-        ]));
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: ListView.separated(
+                  separatorBuilder: (context, index) =>
+                      Divider(color: Colors.black, height: 5),
+                  //shrinkWrap: true,
+                  //physics: ClampingScrollPhysics(),
+                  itemCount: 14,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      color: Colors.black38,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+                        child: Row(children: [
+                          Text("Item"),
+                          Spacer(),
+                          IconButton(
+                              onPressed: () async {
+                                var f = await pickFolder(context);
+                                if (f != null) {}
+                              },
+                              icon: Icon(Icons.file_download)),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, ItemTreeView.ROUTE,
+                                  arguments: item);
+                            },
+                            icon: Icon(Icons.folder_open_rounded),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          )
+                        ]),
+                      ),
+                    );
+                  }),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

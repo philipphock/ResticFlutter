@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
-import 'package:restic_ui/views/ItemPrefsView.dart';
-import 'package:restic_ui/views/dialog.dart';
+import 'package:restic_ui/util/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:restic_ui/widgets/MyListItem.dart';
 
@@ -34,7 +33,9 @@ class ItemListView extends StatelessWidget {
                     child: MyListItem(item, listModel));
               },
             )
-          : Center(child: const Text('Use + to add an Item')),
+          : Center(
+              child: const Text('Use + to add an Item'),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           var i = await Navigator.pushNamed(context, ItemEditView.ROUTE,
@@ -57,19 +58,25 @@ class ItemListView extends StatelessWidget {
 class ItemListModel extends ChangeNotifier {
   final List<ListItemModel> entries = [];
   ItemListModel() {
-    $.itemRemove.stream.listen((i) async {
-      int choice = await MyDialog.showAlertDialog(
-          i.context, "Delete?", "Delete this element?", [
-        DialogOption<int>("no", 0),
-        DialogOption<int>("yes, from list", 1),
-        DialogOption<int>("yes, delete from file system", 2)
-      ]);
+    $.itemRemove.stream.listen(
+      (i) async {
+        int choice = await showAlertDialog(
+          i.context,
+          "Delete?",
+          "Delete this element?",
+          [
+            DialogOption<int>("no", 0),
+            DialogOption<int>("yes, from list", 1),
+            DialogOption<int>("yes, delete from file system", 2)
+          ],
+        );
 
-      if (choice == 1) {
-        entries.remove(i.payload);
-        notifyListeners();
-      }
-    });
+        if (choice == 1) {
+          entries.remove(i.payload);
+          notifyListeners();
+        }
+      },
+    );
   }
 
   void AddItem(ListItemModel m) {
