@@ -5,10 +5,29 @@ import 'package:restic_ui/process/resticjsons.dart';
 
 class ResticProxy {
   static final ProcessExecutor _executor = ProcessExecutor();
-  static Future<List<Snapshot>> getSnapshots(String repo, String wd) async {
-    var l = await _exec("snapshots", repo, wd);
-    //var splitter = LineSplitter();
-    //var lines = splitter.convert(l);
+  static Future<List<SnapshotFile>> getFiles(
+      String repo, String snid, String wd, String pw) async {
+    var l = await _exec(["ls", snid], repo, wd, pw);
+    var splitter = LineSplitter();
+    var lines = splitter.convert(l);
+
+    var ret = <SnapshotFile>[];
+
+    lines.forEach((line) {
+      var file = jsonDecode(line);
+      if (file['struct_type'] == 'node') {
+        var f = SnapshotFile.fromJSON(file);
+        ret.add(f);
+        print(f);
+      }
+    });
+
+    return ret;
+  }
+
+  static Future<List<Snapshot>> getSnapshots(
+      String repo, String wd, String pw) async {
+    var l = await _exec(["snapshots"], repo, wd, pw);
     var ret = <Snapshot>[];
     var snapshots = jsonDecode(l);
     snapshots.forEach((element) {
@@ -16,9 +35,6 @@ class ResticProxy {
       ret.add(s);
     });
 
-    //lines.forEach((line) {
-    //
-    //});
     return ret;
   }
 
@@ -45,7 +61,7 @@ class ResticProxy {
 
   static Future<String> _exec(
       List<String> args, String repo, String wd, String pw) async {
-    var env = {"RESTIC_PASSWORD": "a", "RESTIC_REPOSITORY": repo};
+    var env = {"RESTIC_PASSWORD": pw, "RESTIC_REPOSITORY": repo};
 
     var p = await _executor.exec(args + ["--json"], wd, env);
     var sum = await p.summary();
@@ -57,4 +73,9 @@ class ResticProxy {
     }
     return sum.stdout;
   }
+}
+
+main(List<String> args) async {
+  var ss = await ResticProxy.getFiles(r"c:\test\repo", "latest", ".", "a");
+  ss.forEach(print);
 }

@@ -4,9 +4,6 @@ class Snapshot {
   String time;
 
   Snapshot.fromJSON(dynamic d) {
-    print(d);
-    //var d = jsonDecode(json);
-
     id = d['id'];
     time = d['time'];
     time =
@@ -30,8 +27,17 @@ class Snapshot {
 }
 
 class SnapshotFile {
+  String name;
+  bool isDir;
+  String path;
+
+  SnapshotFile.fromJSON(dynamic d) {
+    name = d['name'];
+    isDir = d['type'] == "dir";
+    path = d['path'];
+  }
   @override
   String toString() {
-    return """ """;
+    return "file: $name ($isDir): $path";
   }
 }
