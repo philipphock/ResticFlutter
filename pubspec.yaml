@@ -28,6 +28,7 @@ dependencies:
   filesystem_picker: ^1.0.4
   sembast: ^3.0.0+4
   intl: ^0.17.0
+  flutter_treeview: ^0.8.0+1
 
 
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class Snapshot {
   String id;
   List<String> paths = [];
@@ -31,13 +33,33 @@ class SnapshotFile {
   bool isDir;
   String path;
 
+  String get parent {
+    var sp = splittedPath;
+
+    sp.removeLast();
+
+    return sp.join("/");
+  }
+
+  List<String> get splittedPath {
+    return path.split("/");
+  }
+
   SnapshotFile.fromJSON(dynamic d) {
     name = d['name'];
     isDir = d['type'] == "dir";
     path = d['path'];
   }
+
+  SnapshotFile.root() {
+    name = "root";
+    isDir = true;
+    path = "/";
+  }
+
   @override
   String toString() {
-    return "file: $name ($isDir): $path";
+    //return "file: $name ($isDir): $path";
+    return name;
   }
 }
