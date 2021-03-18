@@ -109,13 +109,12 @@ class ItemEditState extends State<ItemEditView> with Log {
 
     final List<TextEditingController> srcController = <TextEditingController>[];
 
-    ret.source?.asMap().forEach((index, element) {
+    ret.source?.asMap()?.forEach((index, element) {
       var c = TextEditingController(text: element ?? "");
       c.addListener(() {
         ret.source[index] = c.text;
       });
       srcController.add(c);
-      log("element added");
     });
 
     return Scaffold(

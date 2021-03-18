@@ -1,15 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
+import 'package:restic_ui/process/ResticProxy.dart';
+import 'package:restic_ui/process/resticjsons.dart';
 import 'package:restic_ui/util/Filepicker.dart';
 import 'package:restic_ui/views/ItemTreeView.dart';
 
-class ItemPrefsView extends StatelessWidget {
+class ItemPrefsView extends StatefulWidget {
   static const String ROUTE = "/prefs";
+  const ItemPrefsView({Key key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => ItemPrefsViewState();
+}
+
+class ItemPrefsViewState extends State<ItemPrefsView> {
   @override
   Widget build(BuildContext context) {
     final ListItemModel item = ModalRoute.of(context).settings.arguments;
-    print(item.heading);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -50,15 +58,26 @@ class ItemPrefsView extends StatelessWidget {
           ),
 
           // List
-          SnapshotList(item)
+          FutureBuilder<List<Snapshot>>(
+            future: ResticProxy.getSnapshots(item.repo, item.password),
+            builder: (context, AsyncSnapshot<List<Snapshot>> data) {
+              if (!data.hasData) {
+                return Center(
+                    child: Expanded(child: CircularProgressIndicator()));
+              } else {
+                return SnapshotList(data.data);
+              }
+            },
+          ),
         ],
       ),
     );
+    ;
   }
 }
 
 class SnapshotList extends StatelessWidget {
-  final ListItemModel item;
+  final List<Snapshot> item;
   SnapshotList(this.item);
   @override
   Widget build(BuildContext context) {
@@ -70,43 +89,46 @@ class SnapshotList extends StatelessWidget {
                 Divider(color: Colors.black, height: 5),
             //shrinkWrap: true,
             //physics: ClampingScrollPhysics(),
-            itemCount: 14,
+            itemCount: item.length,
             itemBuilder: (BuildContext context, int index) {
-              return Container(
-                color: Colors.black38,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+              return item.length == 0
+                  ? Center(child: Text("no snapshots"))
+                  : Container(
+                      color: Colors.black38,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 30, horizontal: 5),
 
-                  // Buttons
+                        // Buttons
 
-                  child: Row(children: [
-                    Text("Item"),
-                    Spacer(),
-                    IconButton(
-                        onPressed: () async {
-                          var f = await pickFolder(context);
-                          if (f != null) {}
-                        },
-                        icon: Icon(Icons.file_download)),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, ItemTreeView.ROUTE,
-                            arguments: item);
-                      },
-                      icon: Icon(Icons.folder_open_rounded),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.red,
+                        child: Row(children: [
+                          Text(item[index].time),
+                          Spacer(),
+                          IconButton(
+                              onPressed: () async {
+                                var f = await pickFolder(context);
+                                if (f != null) {}
+                              },
+                              icon: Icon(Icons.file_download)),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, ItemTreeView.ROUTE,
+                                  arguments: item);
+                            },
+                            icon: Icon(Icons.folder_open_rounded),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          )
+                        ]),
+
+                        // Buttons
                       ),
-                    )
-                  ]),
-
-                  // Buttons
-                ),
-              );
+                    );
             }),
       ),
     );
