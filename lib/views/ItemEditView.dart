@@ -35,6 +35,7 @@ class ItemEditState extends State<ItemEditView> with Log {
   bool _pwVis = true;
   String _pw2;
   String _pw1;
+  ItemEditViewArgs args;
 
   String get title => _title;
   set title(String value) {
@@ -53,21 +54,32 @@ class ItemEditState extends State<ItemEditView> with Log {
     });
   }
 
-  void save() {
-    try {
-      (() async {
+  void save() async {
+    if (args.op == Operation.NEW) {
+      try {
+        log(ret.repo);
         await ResticProxy.initBackup(ret.repo, ret.source[0], ret.password);
-      })();
-    } catch (e) {
-      showAlertDialog(context, "Error init repo", e, DialogOption.ok());
+        Navigator.pop(context, ret);
+      } catch (e) {
+        showAlertDialog(
+            context, "Error init repo", e.toString(), DialogOption.ok());
+      }
+    } else {
+      try {
+        var e = await ResticProxy.getSnapshots(ret.repo, ret.password);
+        log(e);
+        Navigator.pop(context, ret);
+      } catch (e) {
+        showAlertDialog(
+            context, "Error init repo", e.toString(), DialogOption.ok());
+      }
     }
-
-    Navigator.pop(context, ret);
   }
 
   @override
   Widget build(BuildContext context) {
-    final ItemEditViewArgs args = ModalRoute.of(context).settings.arguments;
+    args = ModalRoute.of(context).settings.arguments;
+
     if (args.op == Operation.NEW) {
       title = "New repo";
       edit = false;
@@ -88,7 +100,18 @@ class ItemEditState extends State<ItemEditView> with Log {
         _pw2 = ret.password;
       }
     }
-    var repoC = TextEditingController(text: ret?.repo);
+
+    final TextEditingController repoController =
+        TextEditingController(text: ret.repo ?? "");
+    repoController.addListener(() {
+      ret.repo = repoController.text;
+    });
+
+    final List<TextEditingController> srcController = <TextEditingController>[];
+
+    ret.source?.forEach((element) {
+      srcController.add(TextEditingController(text: element ?? ""));
+    });
 
     return Scaffold(
       body: Padding(
@@ -106,7 +129,7 @@ class ItemEditState extends State<ItemEditView> with Log {
               children: [
                 Expanded(
                   child: TextFormField(
-                    controller: repoC,
+                    controller: repoController,
                     decoration: InputDecoration(labelText: 'Repo'),
                   ),
                 ),
@@ -115,7 +138,9 @@ class ItemEditState extends State<ItemEditView> with Log {
                   onPressed: () async {
                     var p = await pickFolder(context);
                     if (p != null) {
-                      repoC.text = p;
+                      setState(() {
+                        repoController.text = p;
+                      });
                     }
                   },
                 ),
@@ -131,10 +156,7 @@ class ItemEditState extends State<ItemEditView> with Log {
                 return Row(children: [
                   Expanded(
                       child: TextFormField(
-                    initialValue: ret.source[index],
-                    onChanged: (s) {
-                      ret.source[index] = s;
-                    },
+                    controller: srcController[index],
                     decoration: InputDecoration(labelText: 'Source path'),
                   )),
                   IconButton(
@@ -143,15 +165,17 @@ class ItemEditState extends State<ItemEditView> with Log {
                         var p = await pickFolder(context);
                         if (p != null) {
                           setState(() {
-                            ret.source[index] = p;
+                            srcController[index].text = p;
+                            //ret.source[index] = p;
                           });
                         }
                       }),
                   IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () => setState(
-                      () => ret.source.remove(ret.source[index]),
-                    ),
+                    onPressed: () => setState(() {
+                      ret.source.remove(ret.source[index]);
+                      srcController.removeAt(index);
+                    }),
                   )
                 ]);
               },
@@ -160,7 +184,6 @@ class ItemEditState extends State<ItemEditView> with Log {
               onPressed: () {
                 setState(() {
                   ret.source.add("");
-                  print("ADDED ${ret.source.length}");
                 });
               },
               icon: Icon(Icons.add),
@@ -218,7 +241,7 @@ class ItemEditState extends State<ItemEditView> with Log {
                     width: 50,
                     child: TextFormField(
                       textAlign: TextAlign.center,
-                      initialValue: "${ret.keepSnaps}",
+                      initialValue: "${ret?.keepSnaps}",
                       keyboardType: TextInputType.number,
                       onChanged: (value) => ret.keepSnaps = int.parse(value),
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],

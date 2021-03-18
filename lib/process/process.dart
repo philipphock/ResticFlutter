@@ -129,9 +129,12 @@ class ProcessExecutor {
       List<String> args, String wd, Map<String, String> env) async {
     const APP = "restic";
     //const env = {"RESTIC_PASSWORD": "a"};
-    final process =
-        await Process.start(APP, args, environment: env, workingDirectory: wd);
-
-    return ProcessInfo(process, args[0]);
+    try {
+      final process = await Process.start(APP, args,
+          environment: env, workingDirectory: wd);
+      return ProcessInfo(process, args[0]);
+    } catch (e) {
+      throw e;
+    }
   }
 }
