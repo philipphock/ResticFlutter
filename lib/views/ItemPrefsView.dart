@@ -62,8 +62,10 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
             future: ResticProxy.getSnapshots(item.repo, item.password),
             builder: (context, AsyncSnapshot<List<Snapshot>> data) {
               if (!data.hasData) {
-                return Center(
-                    child: Expanded(child: CircularProgressIndicator()));
+                return Expanded(
+                    child: Align(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator()));
               } else {
                 return SnapshotList(data.data, item);
               }
