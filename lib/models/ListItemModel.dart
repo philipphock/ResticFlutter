@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:restic_ui/db/ListItemModelDao.dart';
 
 class ListItemModel extends ChangeNotifier {
   int dbId = -1;
@@ -77,6 +78,10 @@ class ListItemModel extends ChangeNotifier {
     this.savePw = m.savePw;
     this.keepSnaps = m.keepSnaps;
     this.source = List.from(m.source);
+    this.password = m.password;
+    this._lastBackup = m._lastBackup;
+    this.dbId = m.dbId;
+
     notifyListeners();
   }
 
@@ -91,6 +96,7 @@ class ListItemModel extends ChangeNotifier {
     this._password = json['password'];
     this._repo = json['repo'];
     this._lastBackup = json['lastBackup'];
+    this._savePw = json['savePW'];
 
     jsonDecode(
       json['source'],
@@ -114,6 +120,8 @@ class ListItemModel extends ChangeNotifier {
         'password': this.password,
         'repo': this.repo,
         'source': jsonEncode(this.source),
-        'lastBackup': this._lastBackup
+        'lastBackup': this._lastBackup,
+        'savePW': this._savePw,
+        'dbId': this.dbId
       };
 }

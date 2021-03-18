@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
+import 'package:restic_ui/db/ListItemModelDao.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
 import 'package:restic_ui/views/ItemListView.dart';
@@ -68,6 +69,7 @@ class MyListItem extends StatelessWidget {
                 arguments: ItemEditViewArgs.edit(model));
             if (a != null) {
               model.from(a);
+              ListItemModelDao.updateItem(model);
               parent.notifyListeners();
             }
           },

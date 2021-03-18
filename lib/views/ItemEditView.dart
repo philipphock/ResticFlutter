@@ -18,7 +18,7 @@ class ItemEditViewArgs {
   ItemEditViewArgs.create() : this(null, Operation.NEW);
 }
 
-class ItemEditView extends StatefulWidget {
+class ItemEditView extends StatefulWidget with Log {
   static const String ROUTE = "/edit";
   const ItemEditView({Key key}) : super(key: key);
 
@@ -47,6 +47,7 @@ class ItemEditState extends State<ItemEditView> with Log {
       pwMatch = _pw1 == _pw2;
       if (pwMatch) {
         ret.password = _pw1;
+        log("pw = $_pw1");
       }
     });
   }
@@ -195,6 +196,7 @@ class ItemEditState extends State<ItemEditView> with Log {
                       textAlign: TextAlign.center,
                       initialValue: "${ret.keepSnaps}",
                       keyboardType: TextInputType.number,
+                      onChanged: (value) => ret.keepSnaps = int.parse(value),
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     )),
                 Flexible(child: Text("Save password")),
