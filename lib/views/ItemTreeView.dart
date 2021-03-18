@@ -105,8 +105,11 @@ class TreeWidget extends StatelessWidget with Log {
           if (ret == 1) {
             var folder = await pickFolder(context);
             if (folder != null) {
+              showWaitDialog(context, "extracting...");
+
               await ResticProxy.extract(
                   model.repo, key, snap.id, folder, ".", model.password);
+              Navigator.of(context).pop();
               await showAlertDialog(
                   context, "Extraction complete", "", DialogOption.ok());
             }
@@ -132,7 +135,6 @@ FileTreeElement<SnapshotFile> buildTree(List<SnapshotFile> files) {
 
   files.forEach((f) {
     var node = FileTreeElement<SnapshotFile>(f);
-    //(key: "$cnt", label: f.name, data: f);
 
     var parent = f.parent;
     var dir = f.path;

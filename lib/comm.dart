@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
+import 'package:restic_ui/process/resticjsons.dart';
 
 class ContextPayload<P> {
   final BuildContext context;
@@ -50,5 +51,8 @@ class $ {
   static final BroadcastStream<ContextPayload<ListItemModel>> itemInspect =
       new BroadcastStream();
   static final BroadcastStream<ContextPayload<ListItemModel>> itemEnqueuButton =
+      new BroadcastStream();
+
+  static final BroadcastStream<ContextPayload<Snapshot>> snapshotRemoved =
       new BroadcastStream();
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
 import 'package:restic_ui/process/ResticProxy.dart';
 import 'package:restic_ui/process/resticjsons.dart';
 import 'package:restic_ui/util/Filepicker.dart';
+import 'package:restic_ui/util/dialog.dart';
 import 'package:restic_ui/views/ItemTreeView.dart';
 
 class ItemPrefsView extends StatefulWidget {
@@ -18,7 +20,9 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
   @override
   Widget build(BuildContext context) {
     final ListItemModel item = ModalRoute.of(context).settings.arguments;
-
+    $.snapshotRemoved.stream.listen((event) {
+      setState(() {});
+    });
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -116,8 +120,25 @@ class SnapshotList extends StatelessWidget {
                           Spacer(),
                           IconButton(
                               onPressed: () async {
-                                var f = await pickFolder(context);
-                                if (f != null) {}
+                                var folder = await pickFolder(context);
+                                if (folder != null) {
+                                  showWaitDialog(context, "extracting...");
+                                  await ResticProxy.extract(
+                                      model.repo,
+                                      null,
+                                      item[index].id,
+                                      folder,
+                                      ".",
+                                      model.password);
+                                  Navigator.of(context).pop();
+
+                                  //TODO show wait animation
+                                  await showAlertDialog(
+                                      context,
+                                      "Extraction complete",
+                                      "",
+                                      DialogOption.ok());
+                                }
                               },
                               icon: Icon(Icons.file_download)),
                           IconButton(
@@ -129,7 +150,19 @@ class SnapshotList extends StatelessWidget {
                             icon: Icon(Icons.folder_open_rounded),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              var del = await showAlertDialog(context,
+                                  "delete snapshot?", item[index].time, [
+                                DialogOption("delete", 1),
+                                DialogOption("cancel", 0)
+                              ]);
+                              if (del == 1) {
+                                await ResticProxy.forget(model.repo,
+                                    item[index].id, ".", model.password);
+                                $.snapshotRemoved
+                                    .emit(ContextPayload(context, item[index]));
+                              }
+                            },
                             icon: Icon(
                               Icons.delete,
                               color: Colors.red,

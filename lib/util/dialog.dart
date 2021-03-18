@@ -46,6 +46,30 @@ Future showAlertDialog<R>(BuildContext context, String title, String msg,
   return ret.future;
 }
 
+AlertDialog showWaitDialog(BuildContext context, String title) {
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text(title),
+    content: SizedBox(
+      width: 300,
+      height: 300,
+      child: Align(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    ),
+  );
+
+  // show the dialog
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      });
+
+  return alert;
+}
+
 Future showInputDialog<R>(BuildContext context, String title, final String msg,
     {int len = 1000}) {
   // set up the buttons
