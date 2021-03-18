@@ -17,8 +17,7 @@ class ResticProxy {
       var file = jsonDecode(line);
       if (file['struct_type'] == 'node') {
         var f = SnapshotFile.fromJSON(file);
-        ret.add(f);
-        print(f);
+        ret.add(f)
       }
     });
 
@@ -42,21 +41,25 @@ class ResticProxy {
     await _exec(["forget", snid], repo, wd, pw);
   }
 
+            
   static Future extract(String repo, String includeOnly, String snapshotId,
-      String wd, String pw) async {
+      String where, String wd, String pw) async {
     var incl = "";
     if (includeOnly != null) {
       incl = "--include \"$includeOnly\"";
     }
-    await _exec(["extract", snapshotId, incl], repo, wd, pw);
+    await _exec(["restore", snapshotId, incl,"--target","\"$where\""], repo, wd, pw);
   }
 
   static Future initBackup(String repo, String wd, String pw) async {
     await _exec(["init"], repo, wd, pw);
   }
 
-  static Future doBackup(String repo, String wd, String pw) async {
+  static Future doBackup(String repo, int keep, String wd, String pw) async {
     await _exec(["backup"], repo, wd, pw);
+    if (keep > 0){
+      await _exec(["forget","--keep-last","$keep"], repo, wd, pw);
+    }
   }
 
   static Future<String> _exec(
