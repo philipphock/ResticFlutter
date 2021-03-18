@@ -65,7 +65,7 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
                 return Center(
                     child: Expanded(child: CircularProgressIndicator()));
               } else {
-                return SnapshotList(data.data);
+                return SnapshotList(data.data, item);
               }
             },
           ),
@@ -78,7 +78,8 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
 
 class SnapshotList extends StatelessWidget {
   final List<Snapshot> item;
-  SnapshotList(this.item);
+  final ListItemModel model;
+  SnapshotList(this.item, this.model);
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -113,7 +114,8 @@ class SnapshotList extends StatelessWidget {
                           IconButton(
                             onPressed: () {
                               Navigator.pushNamed(context, ItemTreeView.ROUTE,
-                                  arguments: item);
+                                  arguments:
+                                      ItemTreeViewArgs(model, item[index]));
                             },
                             icon: Icon(Icons.folder_open_rounded),
                           ),
