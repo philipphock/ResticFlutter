@@ -7,6 +7,10 @@ class DialogOption<R> {
   final String label;
   final R returnValue;
   DialogOption(this.label, this.returnValue);
+
+  static List<DialogOption> ok() {
+    return [DialogOption<int>("ok", 0)];
+  }
 }
 
 Future showAlertDialog<R>(BuildContext context, String title, String msg,

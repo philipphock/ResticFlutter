@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/db/ListItemModelDao.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
+import 'package:restic_ui/process/ResticProxy.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
 import 'package:restic_ui/util/dialog.dart';
 import 'package:provider/provider.dart';
@@ -36,12 +37,14 @@ class ItemListView extends StatelessWidget {
     );
 
     final addbutton = FloatingActionButton(
-      onPressed: () async {
-        var i = await Navigator.pushNamed(context, ItemEditView.ROUTE,
-            arguments: ItemEditViewArgs.create()) as ListItemModel;
-        if (i != null) {
-          listModel.AddItem(i);
-        }
+      onPressed: () {
+        (() async {
+          var i = await Navigator.pushNamed(context, ItemEditView.ROUTE,
+              arguments: ItemEditViewArgs.create()) as ListItemModel;
+          if (i != null) {
+            listModel.AddItem(i);
+          }
+        })();
       },
       tooltip: 'Add Item',
       child: Icon(Icons.add),

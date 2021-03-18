@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
+import 'package:restic_ui/process/ResticProxy.dart';
 import 'package:restic_ui/util/Filepicker.dart';
 import 'package:restic_ui/util/Log.dart';
 import 'package:restic_ui/util/dialog.dart';
@@ -53,6 +54,14 @@ class ItemEditState extends State<ItemEditView> with Log {
   }
 
   void save() {
+    try {
+      (() async {
+        await ResticProxy.initBackup(ret.repo, ret.source[0], ret.password);
+      })();
+    } catch (e) {
+      showAlertDialog(context, "Error init repo", e, DialogOption.ok());
+    }
+
     Navigator.pop(context, ret);
   }
 
@@ -79,6 +88,7 @@ class ItemEditState extends State<ItemEditView> with Log {
         _pw2 = ret.password;
       }
     }
+    var repoC = TextEditingController(text: ret?.repo);
 
     return Scaffold(
       body: Padding(
@@ -92,12 +102,24 @@ class ItemEditState extends State<ItemEditView> with Log {
               },
               decoration: InputDecoration(labelText: 'Name'),
             ),
-            TextFormField(
-              initialValue: ret.repo,
-              onChanged: (s) {
-                ret.repo = s;
-              },
-              decoration: InputDecoration(labelText: 'Repo'),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: repoC,
+                    decoration: InputDecoration(labelText: 'Repo'),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.folder_open),
+                  onPressed: () async {
+                    var p = await pickFolder(context);
+                    if (p != null) {
+                      repoC.text = p;
+                    }
+                  },
+                ),
+              ],
             ),
             SizedBox(height: 14),
             Text("Sources", style: TextStyle(fontSize: 19)),
@@ -117,12 +139,14 @@ class ItemEditState extends State<ItemEditView> with Log {
                   )),
                   IconButton(
                       icon: Icon(Icons.folder_open),
-                      onPressed: () => setState(() async {
-                            var p = await pickFolder(context);
-                            if (p != null) {
-                              ret.source[index] = p;
-                            }
-                          })),
+                      onPressed: () async {
+                        var p = await pickFolder(context);
+                        if (p != null) {
+                          setState(() {
+                            ret.source[index] = p;
+                          });
+                        }
+                      }),
                   IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () => setState(

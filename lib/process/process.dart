@@ -135,13 +135,3 @@ class ProcessExecutor {
     return ProcessInfo(process, args[0]);
   }
 }
-
-void main() async {
-  var p = ProcessExecutor();
-  var args = ["snapshots", "--json"];
-  var wd = r".";
-  var env = {"RESTIC_PASSWORD": "a", "RESTIC_REPOSITORY": "repo"};
-  var pi = await p.exec(args, wd, env);
-  var sum = await pi.summary();
-  print(sum);
-}
