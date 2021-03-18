@@ -57,7 +57,6 @@ class ItemEditState extends State<ItemEditView> with Log {
   void save() async {
     if (args.op == Operation.NEW) {
       try {
-        log(ret.repo);
         await ResticProxy.initBackup(ret.repo, ret.source[0], ret.password);
         Navigator.pop(context, ret);
       } catch (e) {
@@ -74,6 +73,11 @@ class ItemEditState extends State<ItemEditView> with Log {
             context, "Error init repo", e.toString(), DialogOption.ok());
       }
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
