@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/db/ListItemModelDao.dart';
@@ -13,8 +12,8 @@ class ItemListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final listModel = context.watch<ItemListModel>();
-
+    final listModel = context.watch<
+        ItemListModel>(); // equivalent to Provider.of<ItemListModel>(context);
     final list = ListView.separated(
       separatorBuilder: (context, id) => Divider(
         height: 2,

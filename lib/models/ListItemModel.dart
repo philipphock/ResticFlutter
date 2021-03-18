@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ListItemModel extends ChangeNotifier {
   int dbId = -1;
@@ -20,6 +21,14 @@ class ListItemModel extends ChangeNotifier {
   int _lastBackup = 0;
 
   //String get lastBackup  =>
+
+  String get lastBackupString {
+    if (_lastBackup == 0) return "Never";
+    var date = DateTime.fromMicrosecondsSinceEpoch(_lastBackup, isUtc: true);
+    var format = DateFormat('dd.mm.yyyy HH:mm:ss').format(date);
+
+    return format;
+  }
 
   set heading(String value) {
     _heading = value;

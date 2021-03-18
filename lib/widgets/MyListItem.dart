@@ -14,7 +14,7 @@ class MyListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var name = Flexible(
         child: Container(
-      child: Text(model?.heading ?? ""),
+      child: Text(model.heading),
       width: 200,
       alignment: Alignment.centerLeft,
     ));
@@ -28,7 +28,7 @@ class MyListItem extends StatelessWidget {
             Row(
               children: [
                 Text("Last Backup: "),
-                Text("TODO", textAlign: TextAlign.left)
+                Text(model.lastBackupString, textAlign: TextAlign.left)
               ],
             ),
             Row(
