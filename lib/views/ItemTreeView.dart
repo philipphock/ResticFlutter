@@ -65,12 +65,6 @@ class TreeWidget extends StatelessWidget with Log {
     var compatibleTree = toNodes(tree);
     root = compatibleTree;
     _treeViewController = TreeViewController(children: root.children);
-
-    var s = tree.toString();
-    log(s);
-
-    //log(root.data.path);
-    //log(root.data.parent);
   }
 
   @override

@@ -49,12 +49,12 @@ class ResticProxy {
 
   static Future extract(String repo, String includeOnly, String snapshotId,
       String where, String wd, String pw) async {
-    var incl = [];
+    var incl = <String>[];
     if (includeOnly != null) {
-      incl = ["--include", "\"$includeOnly\""];
+      incl = ["--include", includeOnly];
     }
-    return _exec(["restore", snapshotId] + incl + ["--target", "\"$where\""],
-        repo, wd, pw);
+    return _exec(
+        ["restore", snapshotId] + incl + ["--target", where], repo, wd, pw);
   }
 
   static Future initBackup(String repo, String wd, String pw) async {
@@ -76,7 +76,6 @@ class ResticProxy {
       List<String> args, String repo, String wd, String pw) async {
     var env = {"RESTIC_PASSWORD": pw, "RESTIC_REPOSITORY": repo};
     var sum;
-
     try {
       var p = await _executor.exec(args + ["--json"], wd, env);
       sum = await p.summary();
