@@ -30,32 +30,39 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // top labels
+
           Padding(
             padding: EdgeInsets.all(5),
             child: Text(
-              "Heading",
+              item.heading,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 38),
             ),
           ),
-
-          Padding(
-            padding: EdgeInsets.all(1),
-            child: Text(
-              "Repo",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 28),
+          Center(
+            child: Wrap(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Repo:     ${item.repo}",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontSize: 28),
+                    ),
+                    Text(
+                      "Source:  ${item.source.join('\n')}",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontSize: 28),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
 
-          Padding(
-            padding: EdgeInsets.all(1),
-            child: Text(
-              "Src",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 28),
-            ),
-          ),
+          // /top labels
 
           // List
           FutureBuilder<List<Snapshot>>(
