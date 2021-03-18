@@ -57,8 +57,8 @@ class ProcessInfo {
   final String _cmd;
 
   ProcessInfo(this._p, this._cmd)
-      : _stdout = _p.stderr.transform(utf8.decoder), //.forEach(print);
-        _stderr = _p.stdout.transform(utf8.decoder), //.forEach(print);
+      : _stderr = _p.stderr.transform(utf8.decoder), //.forEach(print);
+        _stdout = _p.stdout.transform(utf8.decoder), //.forEach(print);
         _event = StreamController() {
     (() async {
       try {
@@ -104,7 +104,7 @@ class ProcessInfo {
           sberr.write(event.stderr);
           break;
         case ProcessInfoEventType.STDOUT:
-          sbout.write(event.stderr);
+          sbout.write(event.stdout);
           break;
         case ProcessInfoEventType.EXIT:
           var c = ProcessSummary(
@@ -136,12 +136,10 @@ class ProcessExecutor {
   }
 }
 
-class ResticProxy {}
-
 void main() async {
   var p = ProcessExecutor();
-  var args = ["snapshots"];
-  var wd = r"c:\test";
+  var args = ["snapshots", "--json"];
+  var wd = r".";
   var env = {"RESTIC_PASSWORD": "a", "RESTIC_REPOSITORY": "repo"};
   var pi = await p.exec(args, wd, env);
   var sum = await pi.summary();

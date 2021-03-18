@@ -101,8 +101,6 @@ class ListItemModel extends ChangeNotifier {
     jsonDecode(
       json['source'],
       reviver: (key, value) {
-        print("key $key");
-        print("value $value");
         if (key != null) {
           this.source.add(value.toString());
         }
