@@ -9,6 +9,7 @@ import 'package:restic_ui/views/ItemPrefsView.dart';
 class MyListItem extends StatelessWidget {
   final ListItemModel model;
   final ItemListModel parent;
+
   MyListItem(this.model, this.parent);
 
   @override
@@ -78,7 +79,7 @@ class MyListItem extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
-            var unsubscribe = $.itemRemove.add(
+            $.itemRemove.add(
               ContextPayload(context, model),
             );
           },
