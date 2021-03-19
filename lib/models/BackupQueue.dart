@@ -1,3 +1,13 @@
+import 'package:restic_ui/models/ListItemModel.dart';
+import 'package:restic_ui/process/process.dart';
+
+class Job {
+  final ListItemModel origin;
+  final ProcessInfo proc;
+
+  Job(this.origin, this.proc);
+}
+
 class BackupQueue {
   static BackupQueue _singleton;
 
@@ -9,4 +19,8 @@ class BackupQueue {
   }
 
   BackupQueue._internal();
+
+  final List<Job> jobs = <Job>[];
+
+  void add(ListItemModel origin) {}
 }

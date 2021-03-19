@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/db/ListItemModelDao.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
-import 'package:restic_ui/process/ResticProxy.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
 import 'package:restic_ui/util/dialog.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +41,7 @@ class ItemListView extends StatelessWidget {
           var i = await Navigator.pushNamed(context, ItemEditView.ROUTE,
               arguments: ItemEditViewArgs.create()) as ListItemModel;
           if (i != null) {
-            listModel.AddItem(i);
+            listModel.addItem(i);
           }
         })();
       },
@@ -91,7 +90,7 @@ class ItemListModel extends ChangeNotifier {
     })();
   }
 
-  void AddItem(ListItemModel m) {
+  void addItem(ListItemModel m) {
     this.entries.add(m);
     ListItemModelDao.createItem(m);
 

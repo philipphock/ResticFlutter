@@ -31,8 +31,8 @@ class BroadcastStream<P> {
   Stream<P> _stream;
 
   BroadcastStream() {
-    _ctrl = StreamController<P>();
-    _stream = _ctrl.stream.asBroadcastStream();
+    _ctrl = StreamController<P>.broadcast();
+    _stream = _ctrl.stream;
   }
 
   void emit(P p) {
