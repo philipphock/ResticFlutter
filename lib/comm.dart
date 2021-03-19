@@ -44,15 +44,15 @@ class BroadcastStream<P> {
 
 class $ {
   $._();
-  static final BroadcastStream<ContextPayload<ListItemModel>> itemRemove =
-      new BroadcastStream();
-  static final BroadcastStream<ContextPayload<ListItemModel>> itemEdited =
-      new BroadcastStream();
-  static final BroadcastStream<ContextPayload<ListItemModel>> itemInspect =
-      new BroadcastStream();
-  static final BroadcastStream<ContextPayload<ListItemModel>> itemEnqueuButton =
-      new BroadcastStream();
+  static final StreamController<ContextPayload<ListItemModel>> itemRemove =
+      new StreamController.broadcast();
+  static final StreamController<ContextPayload<ListItemModel>> itemEdited =
+      new StreamController.broadcast();
+  static final StreamController<ContextPayload<ListItemModel>> itemInspect =
+      new StreamController.broadcast();
+  static final StreamController<ContextPayload<ListItemModel>>
+      itemEnqueuButton = new StreamController.broadcast();
 
-  static final BroadcastStream<ContextPayload<Snapshot>> snapshotRemoved =
-      new BroadcastStream();
+  static final StreamController<ContextPayload<Snapshot>> snapshotRemoved =
+      new StreamController.broadcast();
 }

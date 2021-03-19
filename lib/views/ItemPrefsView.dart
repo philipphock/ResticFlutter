@@ -159,8 +159,8 @@ class SnapshotList extends StatelessWidget {
                               if (del == 1) {
                                 await ResticProxy.forget(model.repo,
                                     item[index].id, ".", model.password);
-                                $.snapshotRemoved
-                                    .emit(ContextPayload(context, item[index]));
+                                var unsubscribe = $.snapshotRemoved
+                                    .add(ContextPayload(context, item[index]));
                               }
                             },
                             icon: Icon(

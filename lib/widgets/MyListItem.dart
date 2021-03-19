@@ -54,7 +54,7 @@ class MyListItem extends StatelessWidget {
           icon: const Icon(Icons
               .play_arrow_sharp), //Icons.check (done), Icons.error(fail) Icons.stop (running), play_arrow_sharp (play no queue), queue_sharp (play in queue)
           onPressed: () {
-            $.itemEnqueuButton.emit(ContextPayload(context, model));
+            $.itemEnqueuButton.add(ContextPayload(context, model));
           },
         ),
         IconButton(
@@ -78,7 +78,7 @@ class MyListItem extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
-            $.itemRemove.emit(
+            var unsubscribe = $.itemRemove.add(
               ContextPayload(context, model),
             );
           },
