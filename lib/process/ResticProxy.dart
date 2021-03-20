@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:restic_ui/process/process.dart';
@@ -61,22 +62,18 @@ class ResticProxy {
     return _exec(["init"], repo, wd, pw);
   }
 
-  static Future doBackup(
+  static Future<ProcessInfo> doBackup(
       String repo, List<String> src, int keep, String wd, String pw) async {
-    String ret0;
     try {
-      ret0 = await _exec(<String>["backup"] + src, repo, wd, pw);
+      return _execStream(<String>["backup"] + src, repo, wd, pw);
     } catch (e) {
       return Future.error(e.toString());
     }
-    if (keep > 0) {
-      try {
-        await _exec(["forget", "--keep-last", "$keep"], repo, wd, pw);
-      } catch (e) {
-        return Future.error(e.toString());
-      }
-    }
-    return ret0;
+  }
+
+  static Future<String> forgetNum(
+      String repo, List<String> src, int keep, String wd, String pw) async {
+    return await _exec(["forget", "--keep-last", "$keep"], repo, wd, pw);
   }
 
   static Future<String> _exec(
@@ -99,12 +96,22 @@ class ResticProxy {
     }
     return sum.stdout;
   }
-}
 
-main(List<String> args) async {
-  try {
-    await ResticProxy.initBackup(r"c:\test\repo", ".", "a");
-  } catch (e) {
-    print(e);
+  static Future<ProcessInfo> _execStream(
+      List<String> args, String repo, String wd, String pw) async {
+    var env = {"RESTIC_PASSWORD": pw, "RESTIC_REPOSITORY": repo};
+    try {
+      return _executor.exec(args + ["--json"], wd, env);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  main(List<String> args) async {
+    try {
+      await ResticProxy.initBackup(r"c:\test\repo", ".", "a");
+    } catch (e) {
+      print(e);
+    }
   }
 }

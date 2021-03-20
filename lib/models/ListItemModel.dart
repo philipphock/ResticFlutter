@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:restic_ui/db/ListItemModelDao.dart';
 import 'package:restic_ui/models/BackupQueue.dart';
 import 'package:restic_ui/process/ResticProxy.dart';
+import 'package:restic_ui/process/process.dart';
 import 'package:restic_ui/util/ModelNotifyer.dart';
 import 'package:restic_ui/views/ErrorLogView.dart';
 import 'package:restic_ui/views/ItemListView.dart';
@@ -19,7 +20,7 @@ class ListItemModel with ModelNotifier {
   BackupQueue q = BackupQueue.singleton();
   JobStatus _state = JobStatus.NOT_IN_LIST;
   String lastErrorMsg;
-
+  ProcessInfo currentProcess;
   final DisposeBag dbag = DisposeBag();
 
   set listItemColor(Color value) {
@@ -124,7 +125,8 @@ class ListItemModel with ModelNotifier {
     } else if (state == JobStatus.ADDED || state == JobStatus.DONE_SUCCESS) {
       q.remove(this);
     } else if (state == JobStatus.RUNNING) {
-      // TODO kill process
+      var s = currentProcess?.kill();
+      print("KILL $s");
     }
   }
 
@@ -159,16 +161,18 @@ class ListItemModel with ModelNotifier {
     this.state = JobStatus.RUNNING;
 
     try {
-      // TODO get process to kill;
-      await ResticProxy.doBackup(repo, source, keepSnaps, source[0], password);
+      currentProcess = await ResticProxy.doBackup(
+          repo, source, keepSnaps, source[0], password);
+      await currentProcess.summary();
+      await ResticProxy.forgetNum(repo, source, keepSnaps, source[0], password);
 
       this.state = JobStatus.DONE_SUCCESS;
       _lastBackup = DateTime.now().millisecondsSinceEpoch;
-      print(_lastBackup);
+
       ListItemModelDao.updateItem(this);
       q.checkAndRun();
     } catch (e) {
-      lastErrorMsg = e;
+      lastErrorMsg = e.toString();
       this.state = JobStatus.DONE_ERROR;
       q.checkAndRun();
     }
