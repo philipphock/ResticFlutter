@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/db/Database.dart';
+import 'package:restic_ui/views/ErrorLogView.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
 import 'package:restic_ui/views/ItemListView.dart';
 import 'package:restic_ui/views/ItemPrefsView.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
               ItemPrefsView.ROUTE: (context) => ItemPrefsView(),
               ItemEditView.ROUTE: (context) => ItemEditView(),
               ItemTreeView.ROUTE: (context) => ItemTreeView(),
+              ErrorLogView.ROUTE: (context) => ErrorLogView()
             }));
   }
 }

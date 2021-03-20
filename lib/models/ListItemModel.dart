@@ -5,14 +5,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:restic_ui/models/BackupQueue.dart';
+import 'package:restic_ui/process/ResticProxy.dart';
 import 'package:restic_ui/util/ModelNotifyer.dart';
+import 'package:restic_ui/views/ErrorLogView.dart';
 import 'package:restic_ui/widgets/MyListItem.dart';
 
 class ListItemModel with ModelNotifier {
   int dbId = -1;
   Color _col = Colors.transparent;
   Color get listItemColor => _col;
-  BackupQueue q;
+  BackupQueue q = BackupQueue.singleton();
+  JobStatus _state = JobStatus.NOT_IN_LIST;
+  String lastErrorMsg;
+
   final DisposeBag dbag = DisposeBag();
 
   set listItemColor(Color value) {
@@ -20,56 +25,32 @@ class ListItemModel with ModelNotifier {
     notifyListeners();
   }
 
+  JobStatus get state => _state;
   IconData qIcon = Icons.device_unknown;
-  /*
-  const Icon(Icons
-              .play_arrow_sharp), //Icons.check (done), Icons.error(fail) Icons.stop (running), play_arrow_sharp (play no queue), queue_sharp (play in queue)
-  */
 
-  void init() {
-    q = BackupQueue.singleton();
-    dbag.add(q.jobStatus.stream.listen((event) {
-      if (event.origin == this) {
-        switch (event.stat) {
-          case JobStatus.ADDED:
-            qIcon = Icons.cancel_outlined;
-            break;
-          case JobStatus.RUNNING:
-            qIcon = Icons.stop;
-            break;
-          case JobStatus.DONE_SUCCESS:
-            qIcon = Icons.remove_circle_outline;
-            break;
-          case JobStatus.DONE_ERROR:
-            qIcon = Icons.error;
-            break;
-          case JobStatus.NOT_IN_LIST:
-            if (q.getRunning() == null) {
-              qIcon = Icons.play_arrow_outlined;
-            } else {
-              qIcon = Icons.queue_sharp;
-            }
-            break;
-        }
-      } else {
-        if (q.getRunning() == null) {
-          qIcon = Icons.play_arrow_outlined;
-        } else {
-          qIcon = Icons.queue_sharp;
-        }
-      }
-      notifyListeners();
-    }));
-    //var j = q.getJob(this);
-    if (q.getRunning() == null) {
-      qIcon = Icons.play_arrow_outlined;
-    } else {
-      qIcon = Icons.queue_sharp;
+  set state(JobStatus s) {
+    switch (s) {
+      case JobStatus.ADDED:
+        qIcon = Icons.remove_circle;
+        break;
+      case JobStatus.RUNNING:
+        qIcon = Icons.run_circle_rounded;
+        break;
+      case JobStatus.DONE_SUCCESS:
+        qIcon = Icons.remove_circle_outline;
+        break;
+      case JobStatus.DONE_ERROR:
+        qIcon = Icons.error;
+        break;
+      case JobStatus.NOT_IN_LIST:
+        qIcon = Icons.play_arrow_outlined;
+        break;
     }
+    this._state = s;
     notifyListeners();
   }
 
-  ListItemModel() {}
+  ListItemModel();
 
   List<String> source = [];
 
@@ -127,8 +108,12 @@ class ListItemModel with ModelNotifier {
     notifyListeners();
   }
 
-  void enqueueButtonClick() {
-    q.add(this);
+  void enqueueButtonClick(BuildContext context) {
+    if (state == JobStatus.DONE_ERROR) {
+      Navigator.pushNamed(context, ErrorLogView.ROUTE, arguments: lastErrorMsg);
+    } else if (state == JobStatus.NOT_IN_LIST) {
+      q.add(this);
+    }
   }
 
   void from(ListItemModel m) {
@@ -146,6 +131,24 @@ class ListItemModel with ModelNotifier {
 
   ListItemModel.clone(ListItemModel toClone) {
     this.from(toClone);
+  }
+
+  void runBackup() async {
+    print("job");
+
+    this.state = JobStatus.RUNNING;
+
+    try {
+      print("run job");
+      var proc =
+          await ResticProxy.doBackup(repo, keepSnaps, source[0], password);
+      print("done job");
+      this.state = JobStatus.DONE_SUCCESS;
+    } catch (e) {
+      print("err job");
+      lastErrorMsg = e;
+      this.state = JobStatus.DONE_ERROR;
+    }
   }
 
   ListItemModel.fromJson(Map<String, dynamic> json) {
@@ -166,7 +169,7 @@ class ListItemModel with ModelNotifier {
         return null;
       },
     );
-    init();
+    this.state = JobStatus.NOT_IN_LIST;
     //this.source = decoded;
     //.map((key, value) => {key, value.toString()});
   }

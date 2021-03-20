@@ -8,6 +8,8 @@ import 'package:restic_ui/views/ItemEditView.dart';
 import 'package:restic_ui/views/ItemListView.dart';
 import 'package:restic_ui/views/ItemPrefsView.dart';
 
+enum JobStatus { ADDED, RUNNING, DONE_SUCCESS, DONE_ERROR, NOT_IN_LIST }
+
 class MyListItem extends StatefulWidget {
   final ListItemModel model;
   final ItemListModel parent;
@@ -76,7 +78,7 @@ class _MyListItemState extends State<MyListItem> {
         IconButton(
           icon: Icon(this.widget.model.qIcon),
           onPressed: () {
-            this.model.enqueueButtonClick();
+            this.model.enqueueButtonClick(context);
           },
         ),
         IconButton(
