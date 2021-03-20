@@ -52,10 +52,9 @@ class MyListItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         IconButton(
-          icon: const Icon(Icons
-              .play_arrow_sharp), //Icons.check (done), Icons.error(fail) Icons.stop (running), play_arrow_sharp (play no queue), queue_sharp (play in queue)
+          icon: Icon(this.model.qIcon),
           onPressed: () {
-            $.itemEnqueuButton.add(ContextPayload(context, model));
+            this.model.enqueueButtonClick();
           },
         ),
         IconButton(

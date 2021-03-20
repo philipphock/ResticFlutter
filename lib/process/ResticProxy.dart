@@ -62,14 +62,20 @@ class ResticProxy {
   }
 
   static Future doBackup(String repo, int keep, String wd, String pw) async {
+    String ret0;
     try {
-      await _exec(["backup"], repo, wd, pw);
+      ret0 = await _exec(["backup"], repo, wd, pw);
     } catch (e) {
-      throw e;
+      return Future.error(e.toString());
     }
     if (keep > 0) {
-      return _exec(["forget", "--keep-last", "$keep"], repo, wd, pw);
+      try {
+        await _exec(["forget", "--keep-last", "$keep"], repo, wd, pw);
+      } catch (e) {
+        return Future.error(e.toString());
+      }
     }
+    return ret0;
   }
 
   static Future<String> _exec(
