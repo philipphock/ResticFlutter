@@ -85,7 +85,14 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
           FutureBuilder<List<Snapshot>>(
             future: ResticProxy.getSnapshots(item.repo, item.password),
             builder: (context, AsyncSnapshot<List<Snapshot>> data) {
-              if (!data.hasData) {
+              if (data.hasError) {
+                Future.delayed(
+                    Duration.zero,
+                    () => showAlertDialog(context, "Error",
+                        data.error.toString(), DialogOption.ok()));
+                return Expanded(
+                    child: Center(child: Text("Error reading repo")));
+              } else if (!data.hasData) {
                 return Expanded(
                     child: Align(
                         alignment: Alignment.center,

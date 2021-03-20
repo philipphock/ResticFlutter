@@ -39,7 +39,7 @@ class ResticProxy {
 
       return ret;
     } catch (e) {
-      throw e;
+      return Future.error(e);
     }
   }
 
