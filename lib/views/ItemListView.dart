@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/db/ListItemModelDao.dart';
@@ -61,9 +63,20 @@ class ItemListView extends StatelessWidget {
 }
 
 class ItemListModel extends ChangeNotifier {
+  final subscriptions = <StreamSubscription>[];
+
+  @override
+  void dispose() {
+    subscriptions.forEach((element) {
+      element.cancel();
+    });
+
+    super.dispose();
+  }
+
   List<ListItemModel> entries = [];
   ItemListModel() {
-    $.itemRemove.stream.listen(
+    subscriptions.add($.itemRemove.stream.listen(
       (i) async {
         int choice = await showAlertDialog(
           i.context,
@@ -82,7 +95,7 @@ class ItemListModel extends ChangeNotifier {
           notifyListeners();
         }
       },
-    );
+    ));
 
     (() async {
       entries = await ListItemModelDao.loadAllItems();

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
@@ -10,19 +13,29 @@ import 'package:restic_ui/views/ItemTreeView.dart';
 
 class ItemPrefsView extends StatefulWidget {
   static const String ROUTE = "/prefs";
-  const ItemPrefsView({Key key}) : super(key: key);
 
+  const ItemPrefsView({Key key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => ItemPrefsViewState();
 }
 
 class ItemPrefsViewState extends State<ItemPrefsView> {
+  final dbag = DisposeBag();
+
+  @override
+  void dispose() {
+    dbag.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ListItemModel item = ModalRoute.of(context).settings.arguments;
-    $.snapshotRemoved.stream.listen((event) {
+    dbag.add($.snapshotRemoved.stream.listen((event) {
       setState(() {});
-    });
+    }));
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(

@@ -56,6 +56,8 @@ class ProcessInfo {
   final StreamController<ProcessInfoEventArgs> _event;
   final String _cmd;
 
+  StreamSubscription sub;
+
   ProcessInfo(this._p, this._cmd)
       : _stderr = _p.stderr.transform(utf8.decoder), //.forEach(print);
         _stdout = _p.stdout.transform(utf8.decoder), //.forEach(print);
@@ -98,7 +100,7 @@ class ProcessInfo {
     final StringBuffer sbout = StringBuffer();
 
     Completer<ProcessSummary> _exec = Completer();
-    stream.listen((event) {
+    final l = (event) {
       switch (event.type) {
         case ProcessInfoEventType.STDERR:
           sberr.write(event.stderr);
@@ -109,16 +111,22 @@ class ProcessInfo {
         case ProcessInfoEventType.EXIT:
           var c = ProcessSummary(
               sberr.toString(), sbout.toString(), event.exitCode, "");
+          sub.cancel();
           _exec.complete(c);
 
           break;
         case ProcessInfoEventType.ERR:
           var c = ProcessSummary(
               sberr.toString(), sbout.toString(), -1, event.errStartInfo);
+
+          sub.cancel();
           _exec.complete(c);
+
           break;
       }
-    });
+    };
+
+    sub = stream.listen(l);
 
     return _exec.future;
   }

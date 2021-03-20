@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +38,15 @@ class ItemEditState extends State<ItemEditView> with Log {
   String _pw2;
   String _pw1;
   ItemEditViewArgs args;
+
+  final dbag = DisposeBag();
+
+  @override
+  void dispose() {
+    dbag.dispose();
+
+    super.dispose();
+  }
 
   String get title => _title;
   set title(String value) {
@@ -76,11 +87,6 @@ class ItemEditState extends State<ItemEditView> with Log {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     args = ModalRoute.of(context).settings.arguments;
 
@@ -107,17 +113,21 @@ class ItemEditState extends State<ItemEditView> with Log {
 
     final TextEditingController repoController =
         TextEditingController(text: ret.repo ?? "");
-    repoController.addListener(() {
+    var l = () {
       ret.repo = repoController.text;
-    });
+    };
+    repoController.addListener(l);
+    dbag.add(l);
 
     final List<TextEditingController> srcController = <TextEditingController>[];
 
     ret.source?.asMap()?.forEach((index, element) {
       var c = TextEditingController(text: element ?? "");
-      c.addListener(() {
+      var l = () {
         ret.source[index] = c.text;
-      });
+      };
+      c.addListener(l);
+      dbag.add(l);
       srcController.add(c);
     });
 
