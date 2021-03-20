@@ -38,6 +38,7 @@ class ItemEditState extends State<ItemEditView> with Log {
   String _pw2;
   String _pw1;
   ItemEditViewArgs args;
+  bool processing = false;
 
   final dbag = DisposeBag();
 
@@ -66,11 +67,17 @@ class ItemEditState extends State<ItemEditView> with Log {
   }
 
   void save() async {
+    setState(() {
+      processing = true;
+    });
     if (args.op == Operation.NEW) {
       try {
         await ResticProxy.initBackup(ret.repo, ret.source[0], ret.password);
         Navigator.pop(context, ret);
       } catch (e) {
+        setState(() {
+          processing = false;
+        });
         showAlertDialog(
             context, "Error init repo", e.toString(), DialogOption.ok());
       }
@@ -80,6 +87,9 @@ class ItemEditState extends State<ItemEditView> with Log {
         log(e);
         Navigator.pop(context, ret);
       } catch (e) {
+        setState(() {
+          processing = false;
+        });
         showAlertDialog(
             context, "Error init repo", e.toString(), DialogOption.ok());
       }
@@ -131,7 +141,7 @@ class ItemEditState extends State<ItemEditView> with Log {
       srcController.add(c);
     });
 
-    return Scaffold(
+    var scaf = Scaffold(
       body: Padding(
           padding: EdgeInsets.all(10),
           child:
@@ -311,5 +321,13 @@ class ItemEditState extends State<ItemEditView> with Log {
         ),
       ),
     );
+    if (processing) {
+      return Expanded(
+          child: Align(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ));
+    }
+    return scaf;
   }
 }
