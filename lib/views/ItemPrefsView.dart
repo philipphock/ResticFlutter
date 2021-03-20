@@ -98,6 +98,12 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
                         alignment: Alignment.center,
                         child: CircularProgressIndicator()));
               } else {
+                if (data.data.length == 0) {
+                  return Expanded(
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Text("no snapshots")));
+                }
                 return SnapshotList(data.data, item);
               }
             },
@@ -125,74 +131,60 @@ class SnapshotList extends StatelessWidget {
             //physics: ClampingScrollPhysics(),
             itemCount: item.length,
             itemBuilder: (BuildContext context, int index) {
-              return item.length == 0
-                  ? Center(child: Text("no snapshots"))
-                  : Container(
-                      color: Colors.black38,
-                      child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+              return Container(
+                color: Colors.black38,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 30, horizontal: 5),
 
-                        // Buttons
+                  // Buttons
 
-                        child: Row(children: [
-                          Text(item[index].time),
-                          Spacer(),
-                          IconButton(
-                              onPressed: () async {
-                                var folder = await pickFolder(context);
-                                if (folder != null) {
-                                  showWaitDialog(context, "extracting...");
-                                  await ResticProxy.extract(
-                                      model.repo,
-                                      null,
-                                      item[index].id,
-                                      folder,
-                                      ".",
-                                      model.password);
-                                  Navigator.of(context).pop();
-
-                                  //TODO show wait animation
-                                  await showAlertDialog(
-                                      context,
-                                      "Extraction complete",
-                                      "",
-                                      DialogOption.ok());
-                                }
-                              },
-                              icon: Icon(Icons.file_download)),
-                          IconButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, ItemTreeView.ROUTE,
-                                  arguments:
-                                      ItemTreeViewArgs(model, item[index]));
-                            },
-                            icon: Icon(Icons.folder_open_rounded),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              var del = await showAlertDialog(context,
-                                  "delete snapshot?", item[index].time, [
-                                DialogOption("delete", 1),
-                                DialogOption("cancel", 0)
-                              ]);
-                              if (del == 1) {
-                                await ResticProxy.forget(model.repo,
-                                    item[index].id, ".", model.password);
-                                $.snapshotRemoved
-                                    .add(ContextPayload(context, item[index]));
-                              }
-                            },
-                            icon: Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            ),
-                          )
-                        ]),
-
-                        // Buttons
+                  child: Row(children: [
+                    Text(item[index].time),
+                    Spacer(),
+                    IconButton(
+                        onPressed: () async {
+                          var folder = await pickFolder(context);
+                          if (folder != null) {
+                            showWaitDialog(context, "extracting...");
+                            await ResticProxy.extract(model.repo, null,
+                                item[index].id, folder, ".", model.password);
+                            Navigator.of(context).pop();
+                            await showAlertDialog(context,
+                                "Extraction complete", "", DialogOption.ok());
+                          }
+                        },
+                        icon: Icon(Icons.file_download)),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, ItemTreeView.ROUTE,
+                            arguments: ItemTreeViewArgs(model, item[index]));
+                      },
+                      icon: Icon(Icons.folder_open_rounded),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        var del = await showAlertDialog(
+                            context, "delete snapshot?", item[index].time, [
+                          DialogOption("delete", 1),
+                          DialogOption("cancel", 0)
+                        ]);
+                        if (del == 1) {
+                          await ResticProxy.forget(
+                              model.repo, item[index].id, ".", model.password);
+                          $.snapshotRemoved
+                              .add(ContextPayload(context, item[index]));
+                        }
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red,
                       ),
-                    );
+                    )
+                  ]),
+
+                  // Buttons
+                ),
+              );
             }),
       ),
     );
