@@ -63,12 +63,16 @@ class ProcessInfo {
     (() async {
       try {
         _stderr.forEach((element) {
-          _event.add(ProcessInfoEventArgs(
-              _cmd, ProcessInfoEventType.STDERR, -1, element, "", ""));
+          if (!_event.isClosed) {
+            _event.add(ProcessInfoEventArgs(
+                _cmd, ProcessInfoEventType.STDERR, -1, element, "", ""));
+          }
         });
         _stdout.forEach((element) {
-          _event.add(ProcessInfoEventArgs(
-              _cmd, ProcessInfoEventType.STDOUT, -1, "", element, ""));
+          if (!_event.isClosed) {
+            _event.add(ProcessInfoEventArgs(
+                _cmd, ProcessInfoEventType.STDOUT, -1, "", element, ""));
+          }
         });
         int exit = await _p.exitCode;
 

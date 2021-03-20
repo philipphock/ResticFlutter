@@ -117,9 +117,11 @@ class ListItemModel with ModelNotifier {
     notifyListeners();
   }
 
-  void enqueueButtonClick(BuildContext context) {
+  void enqueueButtonClick(BuildContext context) async {
     if (state == JobStatus.DONE_ERROR) {
-      Navigator.pushNamed(context, ErrorLogView.ROUTE, arguments: lastErrorMsg);
+      await Navigator.pushNamed(context, ErrorLogView.ROUTE,
+          arguments: lastErrorMsg);
+      state = JobStatus.NOT_IN_LIST;
     } else if (state == JobStatus.NOT_IN_LIST) {
       q.add(this);
     } else if (state == JobStatus.ADDED || state == JobStatus.DONE_SUCCESS) {
@@ -163,18 +165,24 @@ class ListItemModel with ModelNotifier {
     try {
       currentProcess = await ResticProxy.doBackup(
           repo, source, keepSnaps, source[0], password);
-      await currentProcess.summary();
-      await ResticProxy.forgetNum(repo, source, keepSnaps, source[0], password);
-
-      this.state = JobStatus.DONE_SUCCESS;
-      _lastBackup = DateTime.now().millisecondsSinceEpoch;
+      var r0 = await currentProcess.summary();
+      if (r0.exitCode != 0) {
+        this.lastErrorMsg = "Aborted by user.\n" + r0.stderr;
+        this.state = JobStatus.DONE_ERROR;
+      } else {
+        await ResticProxy.forgetNum(
+            repo, source, keepSnaps, source[0], password);
+        this.state = JobStatus.DONE_SUCCESS;
+        _lastBackup = DateTime.now().millisecondsSinceEpoch;
+      }
 
       ListItemModelDao.updateItem(this);
-      q.checkAndRun();
     } catch (e) {
       lastErrorMsg = e.toString();
       this.state = JobStatus.DONE_ERROR;
+    } finally {
       q.checkAndRun();
+      q.jobNotifier.add(this);
     }
     notifyListeners();
   }
