@@ -43,7 +43,12 @@ class ListItemModel with ModelNotifier {
         qIcon = Icons.error;
         break;
       case JobStatus.NOT_IN_LIST:
-        qIcon = Icons.play_arrow_outlined;
+        if (q.getRunning() != null) {
+          qIcon = Icons.playlist_add;
+        } else {
+          qIcon = Icons.play_arrow_outlined;
+        }
+
         break;
     }
     this._state = s;
@@ -129,8 +134,16 @@ class ListItemModel with ModelNotifier {
     this.password = m.password;
     this._lastBackup = m._lastBackup;
     this.dbId = m.dbId;
-
     notifyListeners();
+  }
+
+  void init() {
+    print("init");
+    dbag.add(q.jobNotifier.stream.listen((event) {
+      state = state;
+      print("state change");
+      notifyListeners();
+    }));
   }
 
   ListItemModel.clone(ListItemModel toClone) {
@@ -143,15 +156,15 @@ class ListItemModel with ModelNotifier {
     this.state = JobStatus.RUNNING;
 
     try {
-      print("run job");
       // TODO get process to kill;
       await ResticProxy.doBackup(repo, source, keepSnaps, source[0], password);
-      print("done job");
+
       this.state = JobStatus.DONE_SUCCESS;
+      q.checkAndRun();
     } catch (e) {
-      print("err job");
       lastErrorMsg = e;
       this.state = JobStatus.DONE_ERROR;
+      q.checkAndRun();
     }
   }
 
@@ -174,6 +187,7 @@ class ListItemModel with ModelNotifier {
       },
     );
     this.state = JobStatus.NOT_IN_LIST;
+    init();
     //this.source = decoded;
     //.map((key, value) => {key, value.toString()});
   }
