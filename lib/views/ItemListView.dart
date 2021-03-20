@@ -52,7 +52,7 @@ class ItemListView extends StatelessWidget {
     );
 
     var ret = Scaffold(
-      appBar: AppBar(title: const Text("Title")),
+      appBar: AppBar(title: const Text("Restic Backup UI")),
       body: listModel.entries.length > 0 ? list : emptyInfo,
       floatingActionButton: addbutton,
     );
