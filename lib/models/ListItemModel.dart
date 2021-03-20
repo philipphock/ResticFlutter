@@ -67,9 +67,7 @@ class ListItemModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  ListItemModel() {
-    init();
-  }
+  ListItemModel() {}
 
   List<String> source = [];
 
