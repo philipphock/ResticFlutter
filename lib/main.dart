@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:restic_ui/comm.dart';
-import 'package:restic_ui/db/Database.dart';
 import 'package:restic_ui/views/ErrorLogView.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
 import 'package:restic_ui/views/ItemListView.dart';

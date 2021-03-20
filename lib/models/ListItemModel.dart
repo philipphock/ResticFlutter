@@ -37,7 +37,7 @@ class ListItemModel with ModelNotifier {
         qIcon = Icons.run_circle_rounded;
         break;
       case JobStatus.DONE_SUCCESS:
-        qIcon = Icons.remove_circle_outline;
+        qIcon = Icons.check_box;
         break;
       case JobStatus.DONE_ERROR:
         qIcon = Icons.error;
@@ -113,6 +113,10 @@ class ListItemModel with ModelNotifier {
       Navigator.pushNamed(context, ErrorLogView.ROUTE, arguments: lastErrorMsg);
     } else if (state == JobStatus.NOT_IN_LIST) {
       q.add(this);
+    } else if (state == JobStatus.ADDED || state == JobStatus.DONE_SUCCESS) {
+      q.remove(this);
+    } else if (state == JobStatus.RUNNING) {
+      // TODO kill process
     }
   }
 
@@ -140,8 +144,8 @@ class ListItemModel with ModelNotifier {
 
     try {
       print("run job");
-      var proc =
-          await ResticProxy.doBackup(repo, keepSnaps, source[0], password);
+      // TODO get process to kill;
+      await ResticProxy.doBackup(repo, source, keepSnaps, source[0], password);
       print("done job");
       this.state = JobStatus.DONE_SUCCESS;
     } catch (e) {

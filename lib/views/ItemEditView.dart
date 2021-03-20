@@ -127,7 +127,7 @@ class ItemEditState extends State<ItemEditView> with Log {
       ret.repo = repoController.text;
     };
     repoController.addListener(l);
-    dbag.add(l);
+    dbag.add(() => repoController.removeListener(l));
 
     final List<TextEditingController> srcController = <TextEditingController>[];
 
@@ -137,7 +137,7 @@ class ItemEditState extends State<ItemEditView> with Log {
         ret.source[index] = c.text;
       };
       c.addListener(l);
-      dbag.add(l);
+      dbag.add(() => c.removeListener(l));
       srcController.add(c);
     });
 
@@ -167,7 +167,7 @@ class ItemEditState extends State<ItemEditView> with Log {
                     var p = await pickFolder(context);
                     if (p != null) {
                       setState(() {
-                        repoController.text = p;
+                        repoController.text = p.replaceAll(r"\", "/");
                       });
                     }
                   },
@@ -193,7 +193,7 @@ class ItemEditState extends State<ItemEditView> with Log {
                         var p = await pickFolder(context);
                         if (p != null) {
                           setState(() {
-                            srcController[index].text = p;
+                            srcController[index].text = p.replaceAll(r"\", "/");
                             //ret.source[index] = p;
                           });
                         }

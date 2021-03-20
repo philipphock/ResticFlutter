@@ -61,10 +61,11 @@ class ResticProxy {
     return _exec(["init"], repo, wd, pw);
   }
 
-  static Future doBackup(String repo, int keep, String wd, String pw) async {
+  static Future doBackup(
+      String repo, List<String> src, int keep, String wd, String pw) async {
     String ret0;
     try {
-      ret0 = await _exec(["backup"], repo, wd, pw);
+      ret0 = await _exec(<String>["backup"] + src, repo, wd, pw);
     } catch (e) {
       return Future.error(e.toString());
     }

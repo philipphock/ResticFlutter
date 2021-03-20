@@ -10,38 +10,6 @@ class ContextPayload<P> {
   ContextPayload(this.context, this.payload);
 }
 
-class StreamWrapper<P> {
-  StreamController<P> _ctrl;
-  Stream<P> _stream;
-
-  StreamWrapper() {
-    _ctrl = StreamController<P>();
-    _stream = _ctrl.stream;
-  }
-
-  void emit(P p) {
-    this._ctrl.add(p);
-  }
-
-  Stream<P> get stream => _stream;
-}
-
-class BroadcastStream<P> {
-  StreamController<P> _ctrl;
-  Stream<P> _stream;
-
-  BroadcastStream() {
-    _ctrl = StreamController<P>.broadcast();
-    _stream = _ctrl.stream;
-  }
-
-  void emit(P p) {
-    this._ctrl.add(p);
-  }
-
-  Stream<P> get stream => _stream;
-}
-
 class $ {
   $._();
   static final StreamController<ContextPayload<ListItemModel>> itemRemove =

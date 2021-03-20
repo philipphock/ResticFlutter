@@ -1,5 +1,3 @@
-import 'dart:io';
-
 class Snapshot {
   String id;
   List<String> paths = [];

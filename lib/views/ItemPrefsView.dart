@@ -111,7 +111,6 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
         ],
       ),
     );
-    ;
   }
 }
 
