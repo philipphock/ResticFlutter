@@ -4,10 +4,12 @@ import 'package:disposebag/disposebag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:restic_ui/db/ListItemModelDao.dart';
 import 'package:restic_ui/models/BackupQueue.dart';
 import 'package:restic_ui/process/ResticProxy.dart';
 import 'package:restic_ui/util/ModelNotifyer.dart';
 import 'package:restic_ui/views/ErrorLogView.dart';
+import 'package:restic_ui/views/ItemListView.dart';
 import 'package:restic_ui/widgets/MyListItem.dart';
 
 class ListItemModel with ModelNotifier {
@@ -66,8 +68,9 @@ class ListItemModel with ModelNotifier {
 
   String get lastBackupString {
     if (_lastBackup == 0) return "Never";
-    var date = DateTime.fromMicrosecondsSinceEpoch(_lastBackup, isUtc: true);
-    var format = DateFormat('dd.mm.yyyy HH:mm:ss').format(date);
+    var date = DateTime.fromMillisecondsSinceEpoch(_lastBackup);
+
+    var format = DateFormat('dd.MM.yyyy HH:mm:ss').format(date);
 
     return format;
   }
@@ -160,12 +163,16 @@ class ListItemModel with ModelNotifier {
       await ResticProxy.doBackup(repo, source, keepSnaps, source[0], password);
 
       this.state = JobStatus.DONE_SUCCESS;
+      _lastBackup = DateTime.now().millisecondsSinceEpoch;
+      print(_lastBackup);
+      ListItemModelDao.updateItem(this);
       q.checkAndRun();
     } catch (e) {
       lastErrorMsg = e;
       this.state = JobStatus.DONE_ERROR;
       q.checkAndRun();
     }
+    notifyListeners();
   }
 
   ListItemModel.fromJson(Map<String, dynamic> json) {
