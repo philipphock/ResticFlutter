@@ -5,8 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:restic_ui/models/BackupQueue.dart';
+import 'package:restic_ui/util/ModelNotifyer.dart';
+import 'package:restic_ui/widgets/MyListItem.dart';
 
-class ListItemModel extends ChangeNotifier {
+class ListItemModel with ModelNotifier {
   int dbId = -1;
   Color _col = Colors.transparent;
   Color get listItemColor => _col;
@@ -126,7 +128,7 @@ class ListItemModel extends ChangeNotifier {
   }
 
   void enqueueButtonClick() {
-    q.getJob(this)?.stat;
+    q.add(this);
   }
 
   void from(ListItemModel m) {

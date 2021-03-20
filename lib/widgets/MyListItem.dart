@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/db/ListItemModelDao.dart';
@@ -6,17 +8,37 @@ import 'package:restic_ui/views/ItemEditView.dart';
 import 'package:restic_ui/views/ItemListView.dart';
 import 'package:restic_ui/views/ItemPrefsView.dart';
 
-class MyListItem extends StatelessWidget {
+class MyListItem extends StatefulWidget {
   final ListItemModel model;
   final ItemListModel parent;
 
   MyListItem(this.model, this.parent);
 
   @override
+  _MyListItemState createState() => _MyListItemState(this.model, this.parent);
+}
+
+class _MyListItemState extends State<MyListItem> {
+  final ListItemModel model;
+  final ItemListModel parent;
+  StreamSubscription subscription;
+  _MyListItemState(this.model, this.parent) {
+    subscription = model.changeListener.stream.listen((event) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var name = Flexible(
         child: Container(
-      child: Text(model.heading),
+      child: Text(widget.model.heading),
       width: 200,
       alignment: Alignment.centerLeft,
     ));
@@ -30,18 +52,18 @@ class MyListItem extends StatelessWidget {
             Row(
               children: [
                 Text("Last Backup: "),
-                Text(model.lastBackupString, textAlign: TextAlign.left)
+                Text(widget.model.lastBackupString, textAlign: TextAlign.left)
               ],
             ),
             Row(
               children: [
                 Text("Repo: "),
-                Text(model.repo, textAlign: TextAlign.left)
+                Text(widget.model.repo, textAlign: TextAlign.left)
               ],
             ),
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text("Source: "),
-              Text(model.source.join("\n"), textAlign: TextAlign.left)
+              Text(widget.model.source.join("\n"), textAlign: TextAlign.left)
             ]),
           ],
         ),
@@ -52,7 +74,7 @@ class MyListItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         IconButton(
-          icon: Icon(this.model.qIcon),
+          icon: Icon(this.widget.model.qIcon),
           onPressed: () {
             this.model.enqueueButtonClick();
           },
@@ -60,18 +82,19 @@ class MyListItem extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.search),
           onPressed: () {
-            Navigator.pushNamed(context, ItemPrefsView.ROUTE, arguments: model);
+            Navigator.pushNamed(context, ItemPrefsView.ROUTE,
+                arguments: widget.model);
           },
         ),
         IconButton(
           icon: const Icon(Icons.edit),
           onPressed: () async {
             var a = await Navigator.pushNamed(context, ItemEditView.ROUTE,
-                arguments: ItemEditViewArgs.edit(model));
+                arguments: ItemEditViewArgs.edit(widget.model));
             if (a != null) {
-              model.from(a);
-              ListItemModelDao.updateItem(model);
-              parent.notifyListeners();
+              widget.model.from(a);
+              ListItemModelDao.updateItem(widget.model);
+              widget.parent.notifyListeners();
             }
           },
         ),
@@ -79,7 +102,7 @@ class MyListItem extends StatelessWidget {
           icon: const Icon(Icons.delete),
           onPressed: () {
             $.itemRemove.add(
-              ContextPayload(context, model),
+              ContextPayload(context, widget.model),
             );
           },
         ),
@@ -88,15 +111,15 @@ class MyListItem extends StatelessWidget {
 
     return MouseRegion(
       onExit: (e) {
-        model.listItemColor = Colors.transparent;
+        widget.model.listItemColor = Colors.transparent;
       },
       onHover: (e) {
-        model.listItemColor = Colors.lightBlue;
+        widget.model.listItemColor = Colors.lightBlue;
       },
       child: Padding(
         padding: EdgeInsets.fromLTRB(10, 3, 10, 3),
         child: Container(
-          color: model.listItemColor,
+          color: widget.model.listItemColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [name, paths, buttons],
