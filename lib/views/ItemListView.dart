@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:restic_ui/comm.dart';
@@ -93,6 +94,17 @@ class ItemListModel extends ChangeNotifier {
           entries.remove(i.payload);
           ListItemModelDao.deleteItem(i.payload);
           notifyListeners();
+        }
+        if (choice == 2) {
+          try {
+            new Directory(i.payload.repo).delete(recursive: true);
+            entries.remove(i.payload);
+            ListItemModelDao.deleteItem(i.payload);
+            notifyListeners();
+          } catch (e) {
+            showAlertDialog(
+                i.context, "Error", e.toString(), DialogOption.ok());
+          }
         }
       },
     ));
