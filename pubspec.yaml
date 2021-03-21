@@ -30,6 +30,8 @@ dependencies:
   intl: ^0.17.0
   flutter_treeview: ^0.8.0+1
   disposebag: ^1.4.0
+  filepicker_windows: ^2.0.0
+
 
 
 
