@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/db/ListItemModelDao.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
@@ -103,9 +102,7 @@ class _MyListItemState extends State<MyListItem> {
         IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
-            $.itemRemove.add(
-              ContextPayload(context, widget.model),
-            );
+            parent.removeItem(context, widget.model);
           },
         ),
       ],

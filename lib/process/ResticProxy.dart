@@ -38,7 +38,7 @@ class ResticProxy {
         ret.add(s);
       });
 
-      return ret;
+      return ret.reversed.toList();
     } catch (e) {
       return Future.error(e);
     }

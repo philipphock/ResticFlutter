@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/db/ListItemModelDao.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
 import 'package:restic_ui/views/ItemEditView.dart';
@@ -10,9 +9,14 @@ import 'package:restic_ui/util/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:restic_ui/widgets/MyListItem.dart';
 
-class ItemListView extends StatelessWidget {
+class ItemListView extends StatefulWidget {
   static const String ROUTE = "/";
 
+  @override
+  _ItemListViewState createState() => _ItemListViewState();
+}
+
+class _ItemListViewState extends State<ItemListView> {
   @override
   Widget build(BuildContext context) {
     final listModel = context.watch<
@@ -44,7 +48,9 @@ class ItemListView extends StatelessWidget {
           var i = await Navigator.pushNamed(context, ItemEditView.ROUTE,
               arguments: ItemEditViewArgs.create()) as ListItemModel;
           if (i != null) {
-            listModel.addItem(i);
+            setState(() {
+              listModel.addItem(i);
+            });
           }
         })();
       },
@@ -65,6 +71,7 @@ class ItemListView extends StatelessWidget {
 
 class ItemListModel extends ChangeNotifier {
   final subscriptions = <StreamSubscription>[];
+  List<ListItemModel> entries = [];
 
   @override
   void dispose() {
@@ -75,40 +82,36 @@ class ItemListModel extends ChangeNotifier {
     super.dispose();
   }
 
-  List<ListItemModel> entries = [];
+  void removeItem(BuildContext context, ListItemModel model) async {
+    int choice = await showAlertDialog(
+      context,
+      "Delete?",
+      "Delete this element?",
+      [
+        DialogOption<int>("no", 0),
+        DialogOption<int>("yes, from list", 1),
+        DialogOption<int>("yes, delete from file system", 2)
+      ],
+    );
+
+    if (choice == 1) {
+      entries.remove(model);
+      ListItemModelDao.deleteItem(model);
+      notifyListeners();
+    }
+    if (choice == 2) {
+      try {
+        new Directory(model.repo).delete(recursive: true);
+        entries.remove(model);
+        ListItemModelDao.deleteItem(model);
+        notifyListeners();
+      } catch (e) {
+        showAlertDialog(context, "Error", e.toString(), DialogOption.ok());
+      }
+    }
+  }
+
   ItemListModel() {
-    subscriptions.add($.itemRemove.stream.listen(
-      (i) async {
-        int choice = await showAlertDialog(
-          i.context,
-          "Delete?",
-          "Delete this element?",
-          [
-            DialogOption<int>("no", 0),
-            DialogOption<int>("yes, from list", 1),
-            DialogOption<int>("yes, delete from file system", 2)
-          ],
-        );
-
-        if (choice == 1) {
-          entries.remove(i.payload);
-          ListItemModelDao.deleteItem(i.payload);
-          notifyListeners();
-        }
-        if (choice == 2) {
-          try {
-            new Directory(i.payload.repo).delete(recursive: true);
-            entries.remove(i.payload);
-            ListItemModelDao.deleteItem(i.payload);
-            notifyListeners();
-          } catch (e) {
-            showAlertDialog(
-                i.context, "Error", e.toString(), DialogOption.ok());
-          }
-        }
-      },
-    ));
-
     (() async {
       entries = await ListItemModelDao.loadAllItems();
       notifyListeners();
@@ -120,5 +123,6 @@ class ItemListModel extends ChangeNotifier {
     ListItemModelDao.createItem(m);
 
     notifyListeners();
+    m.state = JobStatus.NOT_IN_LIST;
   }
 }

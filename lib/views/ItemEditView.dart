@@ -78,13 +78,24 @@ class ItemEditState extends State<ItemEditView> with Log {
         setState(() {
           processing = false;
         });
-        showAlertDialog(
-            context, "Error init repo", e.toString(), DialogOption.ok());
+        if (e.toString().contains("config file already exists")) {
+          try {
+            await ResticProxy.getSnapshots(ret.repo, ret.password);
+            await showAlertDialog(
+                context,
+                "Info",
+                "Repo existed before, password correct, operation successfull",
+                DialogOption.ok());
+            Navigator.pop(context, ret);
+          } catch (e2) {
+            await showAlertDialog(
+                context, "Error", e2.toString(), DialogOption.ok());
+          }
+        }
       }
     } else {
       try {
-        var e = await ResticProxy.getSnapshots(ret.repo, ret.password);
-        log(e);
+        await ResticProxy.getSnapshots(ret.repo, ret.password);
         Navigator.pop(context, ret);
       } catch (e) {
         setState(() {

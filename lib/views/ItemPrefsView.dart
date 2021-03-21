@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:restic_ui/comm.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
 import 'package:restic_ui/process/ResticProxy.dart';
 import 'package:restic_ui/process/resticjsons.dart';
@@ -29,12 +28,13 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
     super.dispose();
   }
 
+  void removeItem(BuildContext context, Snapshot item) {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final ListItemModel item = ModalRoute.of(context).settings.arguments;
-    dbag.add($.snapshotRemoved.stream.listen((event) {
-      setState(() {});
-    }));
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -104,7 +104,7 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
                           alignment: Alignment.center,
                           child: Text("no snapshots")));
                 }
-                return SnapshotList(data.data, item);
+                return SnapshotList(data.data, item, this);
               }
             },
           ),
@@ -114,10 +114,20 @@ class ItemPrefsViewState extends State<ItemPrefsView> {
   }
 }
 
-class SnapshotList extends StatelessWidget {
+class SnapshotList extends StatefulWidget {
   final List<Snapshot> item;
   final ListItemModel model;
-  SnapshotList(this.item, this.model);
+  final ItemPrefsViewState parentState;
+  SnapshotList(this.item, this.model, this.parentState);
+
+  @override
+  _SnapshotListState createState() => _SnapshotListState(parentState);
+}
+
+class _SnapshotListState extends State<SnapshotList> {
+  final ItemPrefsViewState parentState;
+  _SnapshotListState(this.parentState);
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -128,7 +138,7 @@ class SnapshotList extends StatelessWidget {
                 Divider(color: Colors.black, height: 5),
             //shrinkWrap: true,
             //physics: ClampingScrollPhysics(),
-            itemCount: item.length,
+            itemCount: widget.item.length,
             itemBuilder: (BuildContext context, int index) {
               return Container(
                 color: Colors.black38,
@@ -138,15 +148,20 @@ class SnapshotList extends StatelessWidget {
                   // Buttons
 
                   child: Row(children: [
-                    Text(item[index].time),
+                    Text(widget.item[index].time),
                     Spacer(),
                     IconButton(
                         onPressed: () async {
                           var folder = await pickFolder(context);
                           if (folder != null) {
                             showWaitDialog(context, "extracting...");
-                            await ResticProxy.extract(model.repo, null,
-                                item[index].id, folder, ".", model.password);
+                            await ResticProxy.extract(
+                                widget.model.repo,
+                                null,
+                                widget.item[index].id,
+                                folder,
+                                ".",
+                                widget.model.password);
                             Navigator.of(context).pop();
                             await showAlertDialog(context,
                                 "Extraction complete", "", DialogOption.ok());
@@ -156,22 +171,25 @@ class SnapshotList extends StatelessWidget {
                     IconButton(
                       onPressed: () {
                         Navigator.pushNamed(context, ItemTreeView.ROUTE,
-                            arguments: ItemTreeViewArgs(model, item[index]));
+                            arguments: ItemTreeViewArgs(
+                                widget.model, widget.item[index]));
                       },
                       icon: Icon(Icons.folder_open_rounded),
                     ),
                     IconButton(
                       onPressed: () async {
-                        var del = await showAlertDialog(
-                            context, "delete snapshot?", item[index].time, [
+                        var del = await showAlertDialog(context,
+                            "delete snapshot?", widget.item[index].time, [
                           DialogOption("delete", 1),
                           DialogOption("cancel", 0)
                         ]);
                         if (del == 1) {
                           await ResticProxy.forget(
-                              model.repo, item[index].id, ".", model.password);
-                          $.snapshotRemoved
-                              .add(ContextPayload(context, item[index]));
+                              widget.model.repo,
+                              widget.item[index].id,
+                              ".",
+                              widget.model.password);
+                          parentState.removeItem(context, widget.item[index]);
                         }
                       },
                       icon: Icon(
