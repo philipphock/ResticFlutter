@@ -34,9 +34,13 @@ class ItemTreeViewState extends State<StatefulWidget> {
           args.model.password), //item.repo, "latest" item.password
       builder: (context, AsyncSnapshot<List<SnapshotFile>> data) {
         if (!data.hasData) {
-          return Center(child: Expanded(child: CircularProgressIndicator()));
+          return Container(
+            child: Align(child: CircularProgressIndicator()),
+          );
         } else {
-          return TreeWidget(data.data, args.model, args.snap);
+          return Container(
+            child: TreeWidget(data.data, args.model, args.snap),
+          );
         }
       },
     );

@@ -139,7 +139,9 @@ class ProcessExecutor {
     //const env = {"RESTIC_PASSWORD": "a"};
     try {
       final process = await Process.start(APP, args,
-          environment: env, workingDirectory: wd);
+          environment: env,
+          workingDirectory: wd,
+          mode: ProcessStartMode.normal);
       return ProcessInfo(process, args[0]);
     } catch (e) {
       throw e;
