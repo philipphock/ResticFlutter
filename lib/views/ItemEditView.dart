@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:disposebag/disposebag.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:restic_ui/models/ListItemModel.dart';
@@ -134,11 +133,19 @@ class ItemEditState extends State<ItemEditView> with Log {
 
     final TextEditingController repoController =
         TextEditingController(text: ret.repo ?? "");
+
     var l = () {
       ret.repo = repoController.text;
     };
+
+    final StreamController cleanup = StreamController(
+      onListen: () {
+        repoController.removeListener(l);
+      },
+    );
+
     repoController.addListener(l);
-    dbag.add(() => repoController.removeListener(l));
+    dbag.add(cleanup);
 
     final List<TextEditingController> srcController = <TextEditingController>[];
 
@@ -148,7 +155,13 @@ class ItemEditState extends State<ItemEditView> with Log {
         ret.source[index] = c.text;
       };
       c.addListener(l);
-      dbag.add(() => c.removeListener(l));
+      final StreamController cleanup = StreamController(
+        onListen: () {
+          c.removeListener(l);
+        },
+      );
+
+      dbag.add(cleanup);
       srcController.add(c);
     });
 
