@@ -22,6 +22,7 @@ class ListItemModel with ModelNotifier {
   String lastErrorMsg;
   ProcessInfo currentProcess;
   final DisposeBag dbag = DisposeBag();
+  int percent = 0;
 
   set listItemColor(Color value) {
     _col = value;
@@ -125,10 +126,12 @@ class ListItemModel with ModelNotifier {
     } else if (state == JobStatus.NOT_IN_LIST) {
       q.add(this);
     } else if (state == JobStatus.ADDED || state == JobStatus.DONE_SUCCESS) {
+      percent = 0;
       q.remove(this);
     } else if (state == JobStatus.RUNNING) {
       var s = currentProcess?.kill();
     }
+    notifyListeners();
   }
 
   void from(ListItemModel m) {
@@ -176,11 +179,12 @@ class ListItemModel with ModelNotifier {
                 return;
               }
 
-              String ll = replaceNoPrintable(line).trim().substring(3);
+              String ll = replaceNoPrintable(line).trim().substring(0);
               Map<String, dynamic> d = decode(ll);
               if (d['message_type'] == "status") {
                 num done = d['percent_done'];
-                print(done);
+                percent = (done * 100).round();
+                notifyListeners();
               }
             });
           });

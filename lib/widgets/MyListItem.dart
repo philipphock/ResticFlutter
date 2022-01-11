@@ -71,6 +71,11 @@ class _MyListItemState extends State<MyListItem> {
       ),
     );
 
+    var progress = Row(
+      children: [
+        model.percent == 0 ? Container() : Text("Progress: ${model.percent}")
+      ],
+    );
     var buttons = Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -121,7 +126,7 @@ class _MyListItemState extends State<MyListItem> {
           color: widget.model.listItemColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [name, paths, buttons],
+            children: [name, paths, progress, buttons],
           ),
         ),
       ),
