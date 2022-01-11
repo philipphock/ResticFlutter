@@ -9,8 +9,8 @@ import 'package:restic_ui/models/BackupQueue.dart';
 import 'package:restic_ui/process/ResticProxy.dart';
 import 'package:restic_ui/process/process.dart';
 import 'package:restic_ui/util/ModelNotifyer.dart';
+import 'package:restic_ui/util/char.dart';
 import 'package:restic_ui/views/ErrorLogView.dart';
-import 'package:restic_ui/views/ItemListView.dart';
 import 'package:restic_ui/widgets/MyListItem.dart';
 
 class ListItemModel with ModelNotifier {
@@ -128,7 +128,6 @@ class ListItemModel with ModelNotifier {
       q.remove(this);
     } else if (state == JobStatus.RUNNING) {
       var s = currentProcess?.kill();
-      print("KILL $s");
     }
   }
 
@@ -145,10 +144,8 @@ class ListItemModel with ModelNotifier {
   }
 
   void init() {
-    print("init");
     dbag.add(q.jobNotifier.stream.listen((event) {
       state = state;
-      print("state change");
       notifyListeners();
     }));
   }
@@ -157,15 +154,36 @@ class ListItemModel with ModelNotifier {
     this.from(toClone);
   }
 
-  void runBackup() async {
-    print("job");
+  Map<String, dynamic> decode(String jsonString) {
+    return json.decode(jsonString);
+//        '{"message_type":"status","percent_done":0,"total_files":1,"total_bytes":133540355}');
+  }
 
+  void runBackup() async {
     this.state = JobStatus.RUNNING;
 
     try {
       currentProcess = await ResticProxy.doBackup(
           repo, source, keepSnaps, source[0], password);
-      var r0 = await currentProcess.summary();
+      var r0 = await currentProcess.summary(
+          nostdoutbuffer: true,
+          stdoutCallback: (String s) {
+            var splitter = LineSplitter();
+            var lines = splitter.convert(s);
+
+            lines.forEach((line) {
+              if (line.length == 0) {
+                return;
+              }
+
+              String ll = replaceNoPrintable(line).trim().substring(3);
+              Map<String, dynamic> d = decode(ll);
+              if (d['message_type'] == "status") {
+                num done = d['percent_done'];
+                print(done);
+              }
+            });
+          });
       if (r0.exitCode != 0) {
         this.lastErrorMsg = "Aborted by user.\n" + r0.stderr;
         this.state = JobStatus.DONE_ERROR;

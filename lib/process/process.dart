@@ -49,12 +49,15 @@ class ProcessSummary {
   }
 }
 
+typedef FunctionStringCallback = void Function(String data);
+
 class ProcessInfo {
   final Process _p;
   final Stream<String> _stdout;
   final Stream<String> _stderr;
   final StreamController<ProcessInfoEventArgs> _event;
   final String _cmd;
+  FunctionStringCallback a;
 
   ProcessInfo(this._p, this._cmd)
       : _stderr = _p.stderr.transform(utf8.decoder), //.forEach(print);
@@ -97,7 +100,8 @@ class ProcessInfo {
     return _p.exitCode;
   }
 
-  Future<ProcessSummary> summary() async {
+  Future<ProcessSummary> summary(
+      {nostdoutbuffer = false, FunctionStringCallback stdoutCallback}) async {
     final StringBuffer sberr = StringBuffer();
     final StringBuffer sbout = StringBuffer();
 
@@ -108,7 +112,13 @@ class ProcessInfo {
           sberr.write(event.stderr);
           break;
         case ProcessInfoEventType.STDOUT:
-          sbout.write(event.stdout);
+          if (!nostdoutbuffer) {
+            sbout.write(event.stdout);
+          } else {
+            sbout.clear();
+            sbout.write(event.stdout);
+            stdoutCallback(sbout.toString());
+          }
           break;
         case ProcessInfoEventType.EXIT:
           var c = ProcessSummary(
@@ -118,7 +128,11 @@ class ProcessInfo {
           break;
         case ProcessInfoEventType.ERR:
           var c = ProcessSummary(
-              sberr.toString(), sbout.toString(), -1, event.errStartInfo);
+              //sberr.toString(), sbout.toString(), -1, event.errStartInfo);
+              sberr.toString(),
+              sbout.toString(),
+              -1,
+              event.errStartInfo);
 
           _exec.complete(c);
 
